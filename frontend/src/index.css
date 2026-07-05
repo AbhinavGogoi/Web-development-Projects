@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ===== Paper Plane Background Animations ===== */
+
+/* Cloud horizontal drift — loops from off-screen right to off-screen left */
+@keyframes cloud-drift-1 {
+  0% { transform: translateX(110vw); }
+  100% { transform: translateX(-30vw); }
+}
+@keyframes cloud-drift-2 {
+  0% { transform: translateX(120vw); }
+  100% { transform: translateX(-40vw); }
+}
+
+/* Subtle vertical bob for realism */
+@keyframes cloud-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+
+/* Smoke trail particle fade */
+@keyframes smoke-fade {
+  0% { opacity: 0.6; transform: scale(1); }
+  100% { opacity: 0; transform: scale(2.5); }
+}
+
+.cloud-layer-1 { animation: cloud-drift-1 45s linear infinite; }
+.cloud-layer-2 { animation: cloud-drift-1 60s linear infinite; }
+.cloud-layer-3 { animation: cloud-drift-2 55s linear infinite; }
+.cloud-layer-4 { animation: cloud-drift-2 70s linear infinite; }
+.cloud-layer-5 { animation: cloud-drift-1 50s linear infinite; }
+.cloud-layer-6 { animation: cloud-drift-2 65s linear infinite; }
+
+.cloud-bob { animation: cloud-bob 6s ease-in-out infinite; }
