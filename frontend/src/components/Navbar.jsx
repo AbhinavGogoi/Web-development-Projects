@@ -33,12 +33,21 @@ const Navbar = () => {
                 </div>
 
                 {/* Right Zone: CTA Button */}
-                <a href="/login" className="bg-white text-black px-5 py-2 rounded-xl flex items-center gap-2 hover:bg-gray-100 transition-colors shadow-sm z-10">
-                    <span className="text-sm font-bold">Sign In</span>
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                    </svg>
-                </a>
+                {localStorage.getItem('token') ? (
+                    <a href="/dashboard" className="bg-white text-black px-5 py-2 rounded-xl flex items-center gap-2 hover:bg-gray-100 transition-colors shadow-sm z-10">
+                        <span className="text-sm font-bold">Dashboard</span>
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+                        </svg>
+                    </a>
+                ) : (
+                    <a href="/login" className="bg-white text-black px-5 py-2 rounded-xl flex items-center gap-2 hover:bg-gray-100 transition-colors shadow-sm z-10">
+                        <span className="text-sm font-bold">Sign In</span>
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                        </svg>
+                    </a>
+                )}
 
             </nav>
         </div>

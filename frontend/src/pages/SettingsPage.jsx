@@ -424,7 +424,7 @@ const SettingsPage = () => {
             <AnimatePresence>
                 {twoFactor.showModal && (
                     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-                        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} className="bg-white dark:bg-slate-900 rounded-3xl p-8 max-w-sm w-full shadow-2xl relative">
+                        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} className="bg-white dark:bg-white/10 dark:backdrop-blur-2xl border border-slate-100 dark:border-white/10 rounded-3xl p-8 max-w-sm w-full shadow-2xl relative">
                             <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 text-center">Setup 2FA</h3>
                             <p className="text-sm text-slate-500 dark:text-slate-400 mb-6 text-center">Scan this QR code with Google Authenticator or Authy.</p>
                             <div className="flex justify-center mb-6">
@@ -444,7 +444,7 @@ const SettingsPage = () => {
             <AnimatePresence>
                 {showDeleteModal && (
                     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-                        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} className="bg-white dark:bg-slate-900 rounded-3xl p-8 max-w-sm w-full shadow-2xl relative border border-red-500/20">
+                        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} className="bg-white dark:bg-white/10 dark:backdrop-blur-2xl border border-slate-100 dark:border-white/10 rounded-3xl p-8 max-w-sm w-full shadow-2xl relative border border-red-500/20">
                             <div className="w-16 h-16 rounded-full bg-red-100 dark:bg-red-900/30 text-red-500 flex items-center justify-center mx-auto mb-4">
                                 <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" /></svg>
                             </div>
@@ -504,7 +504,7 @@ const SettingsPage = () => {
                             
                             {/* Settings Navigation */}
                             <div className="w-full lg:w-64 flex-shrink-0">
-                                <div className="bg-white dark:bg-slate-900 rounded-3xl p-3 shadow-sm border border-slate-100 dark:border-slate-800 flex flex-col gap-1">
+                                <div className="bg-white dark:bg-white/10 dark:backdrop-blur-2xl border border-slate-100 dark:border-white/10 rounded-3xl p-3 shadow-sm border border-slate-100 dark:border-slate-800 flex flex-col gap-1">
                                     {tabs.map(tab => (
                                         <button
                                             key={tab.id}
@@ -523,7 +523,7 @@ const SettingsPage = () => {
 
                             {/* Settings Content Area */}
                             <div className="flex-1">
-                                <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 shadow-sm border border-slate-100 dark:border-slate-800 min-h-[500px]">
+                                <div className="bg-white dark:bg-white/10 dark:backdrop-blur-2xl border border-slate-100 dark:border-white/10 rounded-3xl p-8 shadow-sm border border-slate-100 dark:border-slate-800 min-h-[500px]">
                                     <form onSubmit={handleSave}>
                                         <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white mb-6 pb-4 border-b border-slate-100 dark:border-slate-800">
                                             {tabs.find(t => t.id === activeTab)?.label}

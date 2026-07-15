@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import myDashboardImage from '../assets/1.jpeg';
+import myDashboardImage2 from '../assets/2.jpeg';
+import myDashboardImage3 from '../assets/3.jpeg';
+``
 
 const HeroSection = () => {
     // Array of placeholder images for the carousel (now sitting at the bottom)
     const images = [
         myDashboardImage,
-        myDashboardImage,
-        myDashboardImage
+        myDashboardImage2,
+        myDashboardImage3
     ];
 
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -57,7 +60,7 @@ const HeroSection = () => {
                 >
                     Plan your week.<br />
                     {/* Using serif & italic to match your reference image's elegant look */}
-                    <span className="font-serif italic text-blue-100 font-medium">Execute with AI.</span>
+                    <span className="font-serif italic text-black font-medium">Execute with AI.</span>
                 </motion.h1>
 
                 <motion.p
@@ -67,14 +70,6 @@ const HeroSection = () => {
                     Supercharge your productivity with automated goal tracking, seamless calendar sync, and an intelligent AI chatbot that creates tasks instantly.
                 </motion.p>
 
-                <motion.div variants={textVariants} className="mt-10">
-                    <button className="px-8 py-3.5 bg-black hover:bg-gray-900 text-white font-semibold rounded-full shadow-2xl transition-transform hover:scale-105 flex items-center justify-center gap-3 mx-auto">
-                        <svg className="w-5 h-5" viewBox="0 0 384 512" fill="currentColor">
-                            <path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 24 184.8 8 273.69c-22.4 74.3-2.7 169.1 47.1 211.2 26.6 22.4 59.3 24.1 84.4 20.6 35.8-5 52.8-22.6 92.4-22.6 39.5 0 54 17.5 91.4 22.6 27.6 3.8 57.5-1.4 81.3-20.6 30.6-24.8 45.4-66.5 45.4-66.5-35.1-15.6-54.8-51.5-54.8-93.5-3.3-8.8-3.3-17.6-3.3-26.2zM212.1 106.1c21.8-26.2 34.3-58 30.8-88.8-25.1 1-56.3 15.6-76.1 36.6-19 20-33.8 52.1-29.3 81.4 28.5 2.1 55.4-11 74.6-29.2z" />
-                        </svg>
-                        <span className="text-sm">Download for Windows</span>
-                    </button>
-                </motion.div>
             </motion.div>
 
             {/* Bottom Dashboard UI Reveal */}

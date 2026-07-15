@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate, Navigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import Navbar from './components/Navbar';
 import HeroSection from './components/HeroSection';
@@ -22,6 +22,7 @@ import AIChatPage from './pages/AIChatPage';
 // which must be rendered INSIDE the <Router> tags.
 const AnimatedRoutes = () => {
   const location = useLocation();
+  const navigate = useNavigate();
 
   // Define our premium fade-in/fade-out transition
   const pageVariants = {
@@ -46,22 +47,26 @@ const AnimatedRoutes = () => {
 
         {/* ROUTE 1: The Landing Page */}
         <Route path="/" element={
-          <motion.div
-            variants={pageVariants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-          >
-            <PaperPlaneBackground />
-            <div className="relative z-10">
-              <Navbar />
-              <HeroSection />
-              <Features />
-              <Testimonials />
-              <Pricing />
-              <Footer />
-            </div>
-          </motion.div>
+          localStorage.getItem('token') ? (
+            <Navigate to="/dashboard" replace />
+          ) : (
+            <motion.div
+              variants={pageVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+            >
+              <PaperPlaneBackground />
+              <div className="relative z-10">
+                <Navbar />
+                <HeroSection />
+                <Features />
+                <Testimonials />
+                <Pricing />
+                <Footer />
+              </div>
+            </motion.div>
+          )
         } />
 
         {/* ROUTE 2: The Auth Page */}

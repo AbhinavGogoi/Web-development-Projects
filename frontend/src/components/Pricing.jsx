@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 
 const Pricing = () => {
     const [isAnnual, setIsAnnual] = useState(true);
+    const navigate = useNavigate();
 
     // Pricing Data adapted for our Task Management App
     const plans = [
@@ -69,9 +71,39 @@ const Pricing = () => {
     };
 
     return (
-        <section id="pricing" className="w-full py-24 px-6 md:px-12 bg-transparent" >
-            <div className="max-w-6xl mx-auto">
+        <section id="pricing" className="w-full py-24 px-6 md:px-12 bg-transparent relative">
+            <div className="max-w-6xl mx-auto relative">
+                
+                {/* Premium Features Overlay */}
+                <div className="absolute inset-0 z-50 flex items-center justify-center p-6">
+                    <motion.div 
+                        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                        whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                        transition={{ duration: 0.5, ease: "easeOut" }}
+                        className="bg-slate-900/80 backdrop-blur-2xl border border-slate-700/50 p-10 md:p-14 rounded-[2.5rem] shadow-[0_0_50px_rgba(0,0,0,0.3)] text-center max-w-2xl mx-auto relative overflow-hidden"
+                    >
+                        {/* Decorative glow inside card */}
+                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-1/2 bg-gradient-to-b from-blue-500/20 to-transparent pointer-events-none"></div>
 
+                        <div className="relative z-10">
+                            <div className="inline-block bg-blue-500/20 border border-blue-400/30 text-blue-300 font-bold px-4 py-1.5 rounded-full mb-6 text-sm tracking-wide uppercase">
+                                Coming Soon
+                            </div>
+                            <h3 className="text-3xl md:text-5xl font-extrabold text-white mb-6 tracking-tight">
+                                Premium Features
+                            </h3>
+                            <p className="text-slate-300 text-lg md:text-xl mb-10 leading-relaxed max-w-lg mx-auto">
+                                We're building powerful new tools to supercharge your workflow. Enjoy the free trial for now while we get everything ready!
+                            </p>
+                            <button onClick={() => navigate('/login')} className="bg-white text-slate-900 font-extrabold text-lg px-10 py-4 rounded-2xl hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl">
+                                Start Free Trial
+                            </button>
+                        </div>
+                    </motion.div>
+                </div>
+
+                {/* Blurred Content */}
+                <div className="blur-[8px] opacity-40 select-none pointer-events-none transition-all duration-500">
                 {/* Header & Toggle Section */}
                 <div className="text-center mb-16">
                     <h2 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight mb-6">
@@ -195,6 +227,7 @@ const Pricing = () => {
                         </motion.div>
                     ))}
                 </motion.div>
+                </div>
             </div>
         </section>
     );

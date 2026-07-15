@@ -322,16 +322,16 @@ const CalendarPage = () => {
                         className="flex items-center gap-3 mb-5 flex-shrink-0 overflow-x-auto pb-1"
                     >
                         {[
-                            { label: 'This Month', value: monthStats.total, icon: '📋', color: 'bg-blue-50 text-blue-600 border-blue-100' },
-                            { label: 'Completed', value: monthStats.completed, icon: '✅', color: 'bg-emerald-50 text-emerald-600 border-emerald-100' },
-                            { label: 'In Progress', value: monthStats.inProgress, icon: '⚡', color: 'bg-sky-50 text-sky-600 border-sky-100' },
-                            { label: 'Pending', value: monthStats.pending, icon: '⏳', color: 'bg-amber-50 text-amber-600 border-amber-100' },
-                            { label: 'Overdue', value: monthStats.overdue, icon: '🚨', color: monthStats.overdue > 0 ? 'bg-red-50 text-red-600 border-red-100' : 'bg-slate-50/50 dark:bg-slate-900/50 text-slate-400 border-slate-100 dark:border-slate-700' },
+                            { label: 'This Month', value: monthStats.total, icon: '📋', color: 'bg-blue-500/10 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400 border-blue-500/20 dark:border-blue-500/30' },
+                            { label: 'Completed', value: monthStats.completed, icon: '✅', color: 'bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border-emerald-500/20 dark:border-emerald-500/30' },
+                            { label: 'In Progress', value: monthStats.inProgress, icon: '⚡', color: 'bg-sky-500/10 dark:bg-sky-500/20 text-sky-700 dark:text-sky-400 border-sky-500/20 dark:border-sky-500/30' },
+                            { label: 'Pending', value: monthStats.pending, icon: '⏳', color: 'bg-amber-500/10 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 border-amber-500/20 dark:border-amber-500/30' },
+                            { label: 'Overdue', value: monthStats.overdue, icon: '🚨', color: monthStats.overdue > 0 ? 'bg-red-500/10 dark:bg-red-500/20 text-red-700 dark:text-red-400 border-red-500/20 dark:border-red-500/30' : 'bg-slate-500/10 dark:bg-slate-500/20 text-slate-500 dark:text-slate-400 border-slate-500/20 dark:border-slate-500/30' },
                         ].map(stat => (
-                            <div key={stat.label} className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl border font-bold text-xs whitespace-nowrap ${stat.color}`}>
+                            <div key={stat.label} className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl border font-bold text-xs whitespace-nowrap backdrop-blur-md shadow-sm hover:-translate-y-0.5 transition-transform cursor-default ${stat.color}`}>
                                 <span>{stat.icon}</span>
-                                <span>{stat.value}</span>
-                                <span className="text-slate-400 font-medium">{stat.label}</span>
+                                <span className="text-sm">{stat.value}</span>
+                                <span className="opacity-80 font-medium ml-0.5">{stat.label}</span>
                             </div>
                         ))}
                     </motion.div>
@@ -344,12 +344,12 @@ const CalendarPage = () => {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ duration: 0.5 }}
-                            className={`bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/60 dark:border-slate-700/50 flex flex-col overflow-hidden transition-all duration-300 ${selectedDate ? 'flex-1' : 'w-full'}`}
+                            className={`bg-white/40 dark:bg-slate-800/40 backdrop-blur-2xl rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/60 dark:border-slate-700/50 flex flex-col overflow-hidden transition-all duration-300 ${selectedDate ? 'flex-1' : 'w-full'}`}
                         >
                             {/* Day-of-week headers */}
-                            <div className="grid grid-cols-7 border-b border-slate-100 dark:border-slate-700">
+                            <div className="grid grid-cols-7 border-b border-white/50 dark:border-slate-700/50">
                                 {DAYS_OF_WEEK.map(day => (
-                                    <div key={day} className="py-3 text-center text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                                    <div key={day} className="py-4 text-center text-[11px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                                         {day}
                                     </div>
                                 ))}
@@ -371,17 +371,17 @@ const CalendarPage = () => {
                                         <button
                                             key={i}
                                             onClick={() => setSelectedDate(dayInfo.date)}
-                                            className={`relative flex flex-col items-start p-1.5 md:p-2 border-b border-r border-slate-50 transition-all duration-150 group min-h-0 overflow-hidden
-                                                ${!dayInfo.isCurrentMonth ? 'bg-slate-50/50 dark:bg-slate-900/50/50' : 'hover:bg-blue-50/50'}
-                                                ${isSelectedCell ? 'bg-blue-50 ring-2 ring-blue-500 ring-inset z-10' : ''}
+                                            className={`relative flex flex-col items-start p-1.5 md:p-2 border-b border-r border-white/30 dark:border-slate-700/30 transition-all duration-150 group min-h-0 overflow-hidden
+                                                ${!dayInfo.isCurrentMonth ? 'bg-slate-100/30 dark:bg-slate-900/60' : 'hover:bg-blue-50/50 dark:hover:bg-slate-700/30'}
+                                                ${isSelectedCell ? 'bg-blue-50/80 dark:bg-blue-900/20 ring-2 ring-blue-500 ring-inset z-10' : ''}
                                             `}
                                         >
                                             {/* Day number */}
                                             <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold mb-0.5 flex-shrink-0 transition-all
-                                                ${isTodayCell ? 'bg-blue-600 text-white shadow-md' : ''}
-                                                ${isSelectedCell && !isTodayCell ? 'bg-blue-100 text-blue-700' : ''}
-                                                ${!dayInfo.isCurrentMonth ? 'text-slate-300' : !isTodayCell && !isSelectedCell ? 'text-slate-700 dark:text-slate-300' : ''}
-                                                ${isPast && dayInfo.isCurrentMonth && !isTodayCell ? 'text-slate-400' : ''}
+                                                ${isTodayCell ? 'bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-md' : ''}
+                                                ${isSelectedCell && !isTodayCell ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300' : ''}
+                                                ${!dayInfo.isCurrentMonth ? 'text-slate-400 dark:text-slate-500' : !isTodayCell && !isSelectedCell ? 'text-slate-700 dark:text-slate-300' : ''}
+                                                ${isPast && dayInfo.isCurrentMonth && !isTodayCell ? 'text-slate-400 dark:text-slate-500' : ''}
                                             `}>
                                                 {dayInfo.day}
                                             </div>

@@ -8,6 +8,13 @@ const Auth = () => {
     const [isLogin, setIsLogin] = useState(true);
     const navigate = useNavigate(); // Initialize the navigate hook
 
+    // Redirect to dashboard if already logged in
+    React.useEffect(() => {
+        if (localStorage.getItem('token')) {
+            navigate('/dashboard');
+        }
+    }, [navigate]);
+
     // State to hold the user's input
     const [formData, setFormData] = useState({
         name: '',

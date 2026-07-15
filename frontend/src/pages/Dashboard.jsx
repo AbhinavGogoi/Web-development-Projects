@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
+import { AreaChart, Area, XAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
 import { API_BASE, SERVER_URL } from '../config';
 
@@ -143,6 +144,44 @@ const Dashboard = () => {
         }));
     }, [tasks]);
 
+    // Weekly completion line graph data over the last 7 days (chronological)
+    const weeklyCompletionData = useMemo(() => {
+        const result = [];
+        const maxDays = 7;
+        const now = new Date();
+
+        for (let i = maxDays - 1; i >= 0; i--) {
+            const d = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
+            result.push({
+                dateObj: d,
+                label: d.toLocaleDateString('en-US', { weekday: 'short' }),
+                completed: 0,
+                total: 0
+            });
+        }
+
+        tasks.forEach(task => {
+            const taskDateStr = task.updatedAt || task.createdAt;
+            if (!taskDateStr) return;
+            const taskDate = new Date(taskDateStr);
+
+            for (let i = 0; i < result.length; i++) {
+                if (
+                    taskDate.getDate() === result[i].dateObj.getDate() &&
+                    taskDate.getMonth() === result[i].dateObj.getMonth() &&
+                    taskDate.getFullYear() === result[i].dateObj.getFullYear()
+                ) {
+                    result[i].total++;
+                    if (task.status === 'Completed') {
+                        result[i].completed++;
+                    }
+                }
+            }
+        });
+
+        return result;
+    }, [tasks]);
+
     // Filter tasks by search query
     const filteredTasks = useMemo(() => {
         if (!searchQuery.trim()) return tasks;
@@ -152,9 +191,8 @@ const Dashboard = () => {
 
     // Next upcoming task for the "Up Next" card
     const nextReminder = useMemo(() => {
-        const now = new Date();
         const upcoming = tasks
-            .filter(t => t.status !== 'Completed' && t.dueDate && new Date(t.dueDate) >= now)
+            .filter(t => t.status !== 'Completed' && t.dueDate)
             .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
         return upcoming[0] || null;
     }, [tasks]);
@@ -402,7 +440,7 @@ const Dashboard = () => {
                 />
 
                 {/* --- RIGHT MAIN CONTENT --- */}
-                <main className="flex-1 flex flex-col h-full overflow-y-auto overflow-x-hidden p-6 md:p-8">
+                <main className="flex-1 flex flex-col h-full overflow-y-auto overflow-x-hidden min-w-0 p-6 md:p-8">
 
                     {/* Top Header */}
                     <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
@@ -413,18 +451,6 @@ const Dashboard = () => {
                         </div>
 
                         <div className="flex items-center gap-4 w-full md:w-auto">
-                            {/* FUNCTIONAL Search Bar */}
-                            <div className="relative w-full md:w-64">
-                                <svg className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-                                <input
-                                    type="text"
-                                    placeholder="Search tasks..."
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
-                                />
-                            </div>
-
                             <button className="w-10 h-10 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-50/50 dark:bg-slate-900/50 shadow-sm flex-shrink-0 relative">
                                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
                                 <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 border-2 border-white rounded-full"></span>
@@ -453,70 +479,94 @@ const Dashboard = () => {
                         className="grid grid-cols-1 md:grid-cols-12 gap-6 pb-8"
                     >
                         {/* ====== TOP STAT ROW (4 Cards — ALL DYNAMIC) ====== */}
-                        <motion.div variants={itemVariants} className="md:col-span-3 bg-blue-600 text-white p-6 rounded-3xl shadow-md relative overflow-hidden">
-                            <div className="absolute right-[-10%] top-[-10%] w-24 h-24 bg-white dark:bg-slate-800/10 rounded-full"></div>
-                            <p className="font-medium text-blue-100 text-sm mb-2">Total Tasks</p>
-                            <h3 className="text-4xl font-extrabold mb-4">{stats.total}</h3>
-                            <div className="flex items-center gap-2 text-xs font-bold text-emerald-300 bg-black/20 w-max px-2 py-1 rounded-lg">
+                        <motion.div
+                            variants={itemVariants}
+                            whileHover={{ y: -5, scale: 1.02 }}
+                            className="md:col-span-3 bg-gradient-to-br from-blue-600 to-indigo-700 text-white p-6 rounded-3xl shadow-md hover:shadow-xl hover:shadow-blue-500/20 transition-all duration-300 relative overflow-hidden group cursor-pointer"
+                        >
+                            <div className="absolute right-[-10%] top-[-10%] w-24 h-24 bg-white/10 dark:bg-slate-800/10 rounded-full group-hover:scale-110 transition-transform duration-500"></div>
+                            <div className="absolute left-[-10%] bottom-[-10%] w-32 h-32 bg-blue-400/20 rounded-full blur-2xl group-hover:bg-blue-400/30 transition-colors duration-500"></div>
+                            <p className="font-medium text-blue-100 text-sm mb-2 relative z-10">Total Tasks</p>
+                            <h3 className="text-4xl font-extrabold mb-4 relative z-10">{stats.total}</h3>
+                            <div className="flex items-center gap-2 text-xs font-bold text-emerald-300 bg-black/20 w-max px-2 py-1 rounded-lg relative z-10">
                                 <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18" /></svg>
                                 {stats.total > 0 ? 'Active workspace' : 'Get started!'}
                             </div>
                         </motion.div>
 
-                        <motion.div variants={itemVariants} className="md:col-span-3 bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl p-6 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/60 dark:border-slate-700/50 flex flex-col justify-between">
-                            <div className="flex justify-between items-start">
-                                <p className="font-bold text-slate-700 dark:text-slate-300 text-sm">Completed</p>
-                                <div className="w-8 h-8 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-500">
+                        <motion.div
+                            variants={itemVariants}
+                            whileHover={{ y: -5, scale: 1.02 }}
+                            className="md:col-span-3 bg-white dark:bg-white/10 dark:backdrop-blur-2xl backdrop-blur-xl p-6 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(16,185,129,0.15)] border border-white/60 dark:border-white/10 hover:border-emerald-500/30 transition-all duration-300 flex flex-col justify-between group cursor-pointer relative overflow-hidden"
+                        >
+                            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                            <div className="flex justify-between items-start relative z-10">
+                                <p className="font-bold text-slate-700 dark:text-slate-300 text-sm group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">Completed</p>
+                                <div className="w-8 h-8 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-500 group-hover:scale-110 group-hover:bg-emerald-500 group-hover:text-white transition-all duration-300 shadow-sm">
                                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
                                 </div>
                             </div>
-                            <div>
-                                <h3 className="text-4xl font-extrabold text-slate-900 dark:text-white mb-2 mt-4">{stats.completed}</h3>
-                                <p className="text-xs text-slate-400 font-medium">{stats.total > 0 ? `${goalProgress}% of all tasks` : 'No tasks yet'}</p>
+                            <div className="relative z-10">
+                                <h3 className="text-4xl font-extrabold text-slate-900 dark:text-white mb-2 mt-4 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">{stats.completed}</h3>
+                                <p className="text-xs text-slate-400 font-medium group-hover:text-slate-500 transition-colors">{stats.total > 0 ? `${goalProgress}% of all tasks` : 'No tasks yet'}</p>
                             </div>
                         </motion.div>
 
-                        <motion.div variants={itemVariants} className="md:col-span-3 bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl p-6 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/60 dark:border-slate-700/50 flex flex-col justify-between">
-                            <div className="flex justify-between items-start">
-                                <p className="font-bold text-slate-700 dark:text-slate-300 text-sm">In Progress</p>
-                                <div className="w-8 h-8 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-500">
+                        <motion.div
+                            variants={itemVariants}
+                            whileHover={{ y: -5, scale: 1.02 }}
+                            className="md:col-span-3 bg-white dark:bg-white/10 dark:backdrop-blur-2xl backdrop-blur-xl p-6 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(59,130,246,0.15)] border border-white/60 dark:border-white/10 hover:border-blue-500/30 transition-all duration-300 flex flex-col justify-between group cursor-pointer relative overflow-hidden"
+                        >
+                            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                            <div className="flex justify-between items-start relative z-10">
+                                <p className="font-bold text-slate-700 dark:text-slate-300 text-sm group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">In Progress</p>
+                                <div className="w-8 h-8 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-500 group-hover:scale-110 group-hover:bg-blue-500 group-hover:text-white transition-all duration-300 shadow-sm">
                                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
                                 </div>
                             </div>
-                            <div>
-                                <h3 className="text-4xl font-extrabold text-slate-900 dark:text-white mb-2 mt-4">{stats.inProgress}</h3>
-                                <p className="text-xs text-slate-400 font-medium">Currently active</p>
+                            <div className="relative z-10">
+                                <h3 className="text-4xl font-extrabold text-slate-900 dark:text-white mb-2 mt-4 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{stats.inProgress}</h3>
+                                <p className="text-xs text-slate-400 font-medium group-hover:text-slate-500 transition-colors">Currently active</p>
                             </div>
                         </motion.div>
 
-                        <motion.div variants={itemVariants} className="md:col-span-3 bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl p-6 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/60 dark:border-slate-700/50 flex flex-col justify-between">
-                            <div className="flex justify-between items-start">
-                                <p className="font-bold text-slate-700 dark:text-slate-300 text-sm">Pending</p>
-                                <div className="w-8 h-8 rounded-full bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-500">
+                        <motion.div
+                            variants={itemVariants}
+                            whileHover={{ y: -5, scale: 1.02 }}
+                            className="md:col-span-3 bg-white dark:bg-white/10 dark:backdrop-blur-2xl backdrop-blur-xl p-6 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(245,158,11,0.15)] border border-white/60 dark:border-white/10 hover:border-amber-500/30 transition-all duration-300 flex flex-col justify-between group cursor-pointer relative overflow-hidden"
+                        >
+                            <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                            <div className="flex justify-between items-start relative z-10">
+                                <p className="font-bold text-slate-700 dark:text-slate-300 text-sm group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">Pending</p>
+                                <div className="w-8 h-8 rounded-full bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-500 group-hover:scale-110 group-hover:bg-amber-500 group-hover:text-white transition-all duration-300 shadow-sm">
                                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                                 </div>
                             </div>
-                            <div>
-                                <h3 className="text-4xl font-extrabold text-slate-900 dark:text-white mb-2 mt-4">{stats.pending}</h3>
-                                <p className="text-xs text-slate-400 font-medium">Awaiting action</p>
+                            <div className="relative z-10">
+                                <h3 className="text-4xl font-extrabold text-slate-900 dark:text-white mb-2 mt-4 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">{stats.pending}</h3>
+                                <p className="text-xs text-slate-400 font-medium group-hover:text-slate-500 transition-colors">Awaiting action</p>
                             </div>
                         </motion.div>
 
                         {/* ====== MIDDLE ROW ====== */}
 
                         {/* Task Analytics — DYNAMIC bar chart from real task data */}
-                        <motion.div variants={itemVariants} className="md:col-span-5 bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl p-6 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/60 dark:border-slate-700/50 flex flex-col">
-                            <h3 className="font-bold text-slate-900 dark:text-white mb-6">Task Analytics</h3>
-                            <div className="flex-1 flex items-end justify-between gap-2 md:gap-4 mt-auto" style={{ minHeight: '120px' }}>
+                        <motion.div variants={itemVariants} whileHover={{ y: -4 }} className="md:col-span-5 bg-white dark:bg-white/10 dark:backdrop-blur-2xl backdrop-blur-xl p-6 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-white/60 dark:border-white/10 transition-all duration-300 flex flex-col group relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/5 dark:bg-blue-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:bg-blue-500/10 transition-colors duration-500"></div>
+                            <h3 className="font-bold text-slate-900 dark:text-white mb-6 relative z-10 flex items-center gap-2">
+                                <svg className="w-5 h-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+                                Task Analytics
+                            </h3>
+                            <div className="flex-1 flex items-end justify-between gap-2 md:gap-4 mt-auto relative z-10" style={{ minHeight: '120px' }}>
                                 {weeklyAnalytics.map((day, i) => (
                                     <div
                                         key={i}
-                                        className={`w-full ${day.color} rounded-t-xl relative transition-all duration-700`}
+                                        className={`w-full ${day.color} rounded-t-xl relative transition-all duration-700 hover:brightness-110 cursor-pointer group/bar`}
                                         style={{ height: day.height }}
                                     >
-                                        <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-xs font-bold text-slate-400">{day.label}</span>
+                                        <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-xs font-bold text-slate-400 group-hover/bar:text-slate-600 transition-colors">{day.label}</span>
                                         {day.count > 0 && (
-                                            <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-[10px] font-bold text-slate-500 dark:text-slate-400">{day.count}</span>
+                                            <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-[10px] font-bold text-slate-500 dark:text-slate-400 group-hover/bar:-translate-y-1 transition-transform">{day.count}</span>
                                         )}
                                     </div>
                                 ))}
@@ -524,11 +574,15 @@ const Dashboard = () => {
                         </motion.div>
 
                         {/* Up Next — DYNAMIC from next upcoming task */}
-                        <motion.div variants={itemVariants} className="md:col-span-3 bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl p-6 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/60 dark:border-slate-700/50">
-                            <h3 className="font-bold text-slate-900 dark:text-white mb-6">Up Next</h3>
+                        <motion.div variants={itemVariants} whileHover={{ y: -4 }} className="md:col-span-3 bg-white dark:bg-white/10 dark:backdrop-blur-2xl backdrop-blur-xl p-6 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-white/60 dark:border-white/10 transition-all duration-300 group relative overflow-hidden flex flex-col justify-between">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 dark:bg-amber-500/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2 group-hover:bg-amber-500/10 transition-colors duration-500"></div>
+                            <h3 className="font-bold text-slate-900 dark:text-white mb-6 relative z-10 flex items-center gap-2">
+                                <svg className="w-5 h-5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                Up Next
+                            </h3>
                             {nextReminder ? (
-                                <div className="mb-6">
-                                    <h4 className="text-lg font-extrabold text-slate-900 dark:text-white leading-tight">{nextReminder.title}</h4>
+                                <div className="mb-6 relative z-10">
+                                    <h4 className="text-lg font-extrabold text-slate-900 dark:text-white leading-tight group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">{nextReminder.title}</h4>
                                     <p className="text-sm text-slate-500 dark:text-slate-400 font-medium mt-2">
                                         Due: {new Date(nextReminder.dueDate).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
                                     </p>
@@ -537,33 +591,49 @@ const Dashboard = () => {
                                     </span>
                                 </div>
                             ) : (
-                                <div className="mb-6">
+                                <div className="mb-6 relative z-10">
                                     <h4 className="text-lg font-extrabold text-slate-900 dark:text-white leading-tight">All clear! 🎉</h4>
                                     <p className="text-sm text-slate-500 dark:text-slate-400 font-medium mt-2">No upcoming tasks</p>
                                 </div>
                             )}
-                            <button onClick={() => setIsModalOpen(true)} className="w-full py-3 bg-slate-900 text-white font-bold rounded-2xl flex items-center justify-center gap-2 shadow-md hover:bg-slate-800 transition-colors">
+                            <button onClick={() => setIsModalOpen(true)} className="w-full py-3 bg-slate-900 text-white font-bold rounded-2xl flex items-center justify-center gap-2 shadow-md hover:bg-slate-800 transition-colors hover:-translate-y-0.5 active:translate-y-0 relative z-10">
                                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
                                 New Task
                             </button>
                         </motion.div>
 
                         {/* Recent Tasks — DYNAMIC with status toggle + delete (spans 2 rows) */}
-                        <motion.div variants={itemVariants} className="md:col-span-4 md:row-span-2 bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl p-6 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/60 dark:border-slate-700/50">
-                            <div className="flex justify-between items-center mb-6">
-                                <h3 className="font-bold text-slate-900 dark:text-white">Recent Tasks</h3>
+                        <motion.div variants={itemVariants} whileHover={{ y: -4 }} className="md:col-span-4 md:row-span-2 bg-white dark:bg-white/10 dark:backdrop-blur-2xl backdrop-blur-xl p-6 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-white/60 dark:border-white/10 transition-all duration-300 relative overflow-hidden flex flex-col">
+                            <div className="absolute top-0 left-0 w-64 h-64 bg-emerald-500/5 dark:bg-emerald-500/10 rounded-full blur-3xl -translate-y-1/2 -translate-x-1/2 pointer-events-none"></div>
+                            <div className="flex justify-between items-center mb-4 relative z-10">
+                                <h3 className="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                                    <svg className="w-5 h-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
+                                    Recent Tasks
+                                </h3>
                                 {/* FIXED: "+ New" button now opens the create task modal */}
-                                <button onClick={() => setIsModalOpen(true)} className="text-xs font-bold bg-slate-50/50 dark:bg-slate-900/50 px-3 py-1 rounded-full text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 transition-colors">+ New</button>
+                                <button onClick={() => setIsModalOpen(true)} className="text-xs font-bold bg-slate-50/50 dark:bg-slate-900/50 px-3 py-1 rounded-full text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 hover:-translate-y-0.5 active:translate-y-0 transition-all">+ New</button>
                             </div>
 
-                            <ul className="space-y-3 max-h-[400px] overflow-y-auto pr-1">
+                            {/* FUNCTIONAL Search Bar - Moved inside Recent Tasks */}
+                            <div className="relative w-full mb-4 relative z-10">
+                                <svg className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                                <input
+                                    type="text"
+                                    placeholder="Search tasks..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="w-full pl-10 pr-4 py-2 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-sm transition-all"
+                                />
+                            </div>
+
+                            <ul className="space-y-3 flex-1 max-h-[350px] overflow-y-auto pr-1 relative z-10">
                                 {filteredTasks.length > 0 ? (
                                     filteredTasks.slice().reverse().map((task) => (
                                         <li key={task._id} className="flex items-center gap-3 group p-2 rounded-xl hover:bg-slate-50/50 dark:bg-slate-900/50 transition-colors">
                                             {/* Status toggle button — click to cycle Pending → In Progress → Completed */}
                                             <button
                                                 onClick={() => handleToggleStatus(task)}
-                                                className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 transition-all duration-200 hover:scale-110 ${task.status === 'Completed'
+                                                className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 transition-all duration-200 hover:scale-110 shadow-sm ${task.status === 'Completed'
                                                     ? 'bg-emerald-100 text-emerald-600'
                                                     : task.status === 'In Progress'
                                                         ? 'bg-blue-100 text-blue-600'
@@ -580,7 +650,7 @@ const Dashboard = () => {
                                                 )}
                                             </button>
                                             <div className="flex-1 min-w-0">
-                                                <h4 className={`font-bold text-sm truncate ${task.status === 'Completed' ? 'text-slate-400 line-through' : 'text-slate-900 dark:text-white'}`}>{task.title}</h4>
+                                                <h4 className={`font-bold text-sm truncate transition-colors ${task.status === 'Completed' ? 'text-slate-400 line-through' : 'text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400'}`}>{task.title}</h4>
                                                 <div className="flex items-center gap-2 mt-0.5">
                                                     <p className="text-xs text-slate-400 font-medium">
                                                         {task.dueDate ? new Date(task.dueDate).toLocaleDateString() : 'No date'}
@@ -589,6 +659,11 @@ const Dashboard = () => {
                                                         {task.priority}
                                                     </span>
                                                 </div>
+                                                {task.description && (
+                                                    <p className={`text-xs mt-1.5 line-clamp-2 ${task.status === 'Completed' ? 'text-slate-400/70' : 'text-slate-500 dark:text-slate-400'}`}>
+                                                        {task.description}
+                                                    </p>
+                                                )}
                                             </div>
                                             {/* Delete button — appears on hover */}
                                             <button
@@ -608,15 +683,46 @@ const Dashboard = () => {
                             </ul>
                         </motion.div>
 
+                        {/* Weekly Progress — NEW EXTRA CARD (col-span-8 to fill the left under Analytics and Up Next) */}
+                        <motion.div variants={itemVariants} whileHover={{ y: -4 }} className="md:col-span-8 bg-white dark:bg-white/10 dark:backdrop-blur-2xl backdrop-blur-xl p-6 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-white/60 dark:border-white/10 transition-all duration-300 flex flex-col group relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 dark:bg-indigo-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:bg-indigo-500/10 transition-colors duration-500"></div>
+                            <h3 className="font-bold text-slate-900 dark:text-white mb-6 relative z-10 flex items-center gap-2">
+                                <svg className="w-5 h-5 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
+                                Completion Progress
+                            </h3>
+                            <div className="flex-1 w-full relative z-10" style={{ minHeight: '180px' }}>
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <AreaChart data={weeklyCompletionData} margin={{ top: 10, right: 0, left: 0, bottom: 0 }}>
+                                        <defs>
+                                            <linearGradient id="colorCompleted" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.4} />
+                                                <stop offset="95%" stopColor="#4f46e5" stopOpacity={0} />
+                                            </linearGradient>
+                                        </defs>
+                                        <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#94a3b8', fontWeight: 'bold' }} dy={10} />
+                                        <Tooltip
+                                            contentStyle={{ backgroundColor: 'rgba(15, 23, 42, 0.8)', borderRadius: '12px', border: 'none', color: '#fff', fontWeight: 'bold', backdropFilter: 'blur(8px)' }}
+                                            itemStyle={{ color: '#818cf8', fontWeight: 'bold' }}
+                                        />
+                                        <Area type="monotone" dataKey="completed" stroke="#4f46e5" strokeWidth={3} fillOpacity={1} fill="url(#colorCompleted)" activeDot={{ r: 6, fill: '#4f46e5', stroke: '#fff', strokeWidth: 2 }} />
+                                    </AreaChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </motion.div>
+
                         {/* ====== BOTTOM ROW ====== */}
 
                         {/* Weekly Goals — DYNAMIC with goal CRUD */}
-                        <motion.div variants={itemVariants} className="md:col-span-4 bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl p-6 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/60 dark:border-slate-700/50">
-                            <div className="flex justify-between items-center mb-6">
-                                <h3 className="font-bold text-slate-900 dark:text-white">Weekly Goals</h3>
-                                <button onClick={() => setIsGoalModalOpen(true)} className="text-xs font-bold bg-slate-50/50 dark:bg-slate-900/50 px-3 py-1 rounded-full text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 transition-colors">+ Add Goal</button>
+                        <motion.div variants={itemVariants} whileHover={{ y: -4 }} className="md:col-span-4 bg-white dark:bg-white/10 dark:backdrop-blur-2xl backdrop-blur-xl p-6 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-white/60 dark:border-white/10 transition-all duration-300 relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-48 h-48 bg-purple-500/5 dark:bg-purple-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4 pointer-events-none"></div>
+                            <div className="flex justify-between items-center mb-6 relative z-10">
+                                <h3 className="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                                    <svg className="w-5 h-5 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                                    Weekly Goals
+                                </h3>
+                                <button onClick={() => setIsGoalModalOpen(true)} className="text-xs font-bold bg-slate-50/50 dark:bg-slate-900/50 px-3 py-1 rounded-full text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 hover:-translate-y-0.5 active:translate-y-0 transition-all">+ Add Goal</button>
                             </div>
-                            <div className="space-y-3 max-h-[180px] overflow-y-auto">
+                            <div className="space-y-3 max-h-[180px] overflow-y-auto relative z-10">
                                 {goals.length > 0 ? (
                                     goals.slice().reverse().map((goal) => {
                                         const goalStatusColors = {
@@ -629,13 +735,13 @@ const Dashboard = () => {
                                             <div key={goal._id} className="flex items-center gap-3 group p-2 rounded-xl hover:bg-slate-50/50 dark:bg-slate-900/50 transition-colors">
                                                 <button
                                                     onClick={() => handleUpdateGoalStatus(goal)}
-                                                    className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0 hover:scale-110 transition-transform"
+                                                    className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0 hover:scale-110 transition-transform shadow-sm"
                                                     title={`Status: ${goal.status} — click to change`}
                                                 >
                                                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
                                                 </button>
                                                 <div className="flex-1 min-w-0">
-                                                    <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{goal.title}</p>
+                                                    <p className="text-sm font-bold text-slate-900 dark:text-white truncate transition-colors group-hover:text-purple-600 dark:group-hover:text-purple-400">{goal.title}</p>
                                                     <p className="text-xs text-slate-400">
                                                         Target: {new Date(goal.targetDate).toLocaleDateString()}
                                                     </p>
@@ -658,33 +764,44 @@ const Dashboard = () => {
                         </motion.div>
 
                         {/* Goal Progress — DYNAMIC donut chart */}
-                        <motion.div variants={itemVariants} className="md:col-span-4 bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl p-6 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/60 dark:border-slate-700/50 flex flex-col justify-between">
-                            <h3 className="font-bold text-slate-900 dark:text-white mb-2">Goal Progress</h3>
-                            <div className="flex items-center justify-center flex-1 relative mt-4">
+                        <motion.div variants={itemVariants} whileHover={{ y: -4 }} className="md:col-span-4 bg-white dark:bg-white/10 dark:backdrop-blur-2xl backdrop-blur-xl p-6 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-white/60 dark:border-white/10 transition-all duration-300 flex flex-col justify-between relative overflow-hidden group">
+                            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-500/5 to-transparent dark:from-blue-500/10 pointer-events-none group-hover:from-blue-500/10 transition-colors duration-500"></div>
+                            <h3 className="font-bold text-slate-900 dark:text-white mb-2 relative z-10 flex items-center gap-2">
+                                <svg className="w-5 h-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" /><path strokeLinecap="round" strokeLinejoin="round" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" /></svg>
+                                Goal Progress
+                            </h3>
+                            <div className="flex items-center justify-center flex-1 relative mt-4 z-10 hover:scale-105 transition-transform duration-500">
                                 <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 100 100">
                                     {/* Background Track */}
-                                    <circle cx="50" cy="50" r="40" stroke="#f1f5f9" strokeWidth="12" fill="transparent" />
+                                    <circle cx="50" cy="50" r="40" stroke="currentColor" className="text-slate-100 dark:text-slate-700" strokeWidth="12" fill="transparent" />
                                     {/* Animated Progress Line */}
                                     <motion.circle
                                         initial={{ strokeDashoffset: circleCircumference }}
                                         animate={{ strokeDashoffset: strokeDashoffset }}
                                         transition={{ duration: 1.5, ease: "easeOut" }}
                                         cx="50" cy="50" r="40"
-                                        stroke="#2563eb"
+                                        stroke="url(#blue-gradient)"
                                         strokeWidth="12"
                                         fill="transparent"
                                         strokeDasharray={circleCircumference}
                                         strokeLinecap="round"
+                                        className="drop-shadow-md"
                                     />
+                                    <defs>
+                                        <linearGradient id="blue-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                            <stop offset="0%" stopColor="#3b82f6" />
+                                            <stop offset="100%" stopColor="#6366f1" />
+                                        </linearGradient>
+                                    </defs>
                                 </svg>
                                 <div className="absolute inset-0 flex flex-col items-center justify-center">
                                     <span className="text-3xl font-extrabold text-slate-900 dark:text-white">{averageGoalProgress}%</span>
                                     <span className="text-xs text-slate-400 font-medium">Avg Progress</span>
                                 </div>
                             </div>
-                            <div className="flex justify-center gap-4 mt-4">
-                                <span className="flex items-center gap-1 text-xs font-bold text-slate-500 dark:text-slate-400"><div className="w-2 h-2 rounded-full bg-blue-600"></div> Goals ({goals.length})</span>
-                                <span className="flex items-center gap-1 text-xs font-bold text-slate-500 dark:text-slate-400"><div className="w-2 h-2 rounded-full bg-emerald-500"></div> Completed ({goals.filter(g => g.status === 'Completed').length})</span>
+                            <div className="flex justify-center gap-4 mt-4 relative z-10">
+                                <span className="flex items-center gap-1 text-xs font-bold text-slate-500 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-300 transition-colors"><div className="w-2 h-2 rounded-full bg-blue-600"></div> Goals ({goals.length})</span>
+                                <span className="flex items-center gap-1 text-xs font-bold text-slate-500 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-300 transition-colors"><div className="w-2 h-2 rounded-full bg-emerald-500"></div> Completed ({goals.filter(g => g.status === 'Completed').length})</span>
                             </div>
                         </motion.div>
 
@@ -703,49 +820,53 @@ const Dashboard = () => {
                         className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4"
                     >
                         <motion.div
-                            initial={{ scale: 0.95, y: 20 }}
-                            animate={{ scale: 1, y: 0 }}
-                            exit={{ scale: 0.95, y: 20 }}
-                            className="w-full max-w-md bg-white dark:bg-slate-800 rounded-3xl shadow-2xl p-8 border border-slate-100 dark:border-slate-700"
+                            initial={{ scale: 0.95, opacity: 0, y: 20 }}
+                            animate={{ scale: 1, opacity: 1, y: 0 }}
+                            exit={{ scale: 0.95, opacity: 0, y: 20 }}
+                            className="w-full max-w-lg bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.2)] dark:shadow-[0_0_50px_rgba(0,0,0,0.5)] p-8 border border-white/50 dark:border-white/10 relative overflow-hidden"
                         >
-                            <div className="flex justify-between items-center mb-6">
-                                <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white">Create New Task</h2>
-                                <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-slate-700 dark:text-slate-300">
-                                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                            {/* Decorative background blurs */}
+                            <div className="absolute -top-20 -right-20 w-40 h-40 bg-blue-500/20 rounded-full blur-3xl pointer-events-none"></div>
+                            <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none"></div>
+
+                            <div className="flex justify-between items-center mb-8 relative z-10">
+                                <h2 className="text-2xl font-extrabold bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">Create New Task</h2>
+                                <button onClick={() => setIsModalOpen(false)} className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-700 transition-all">
+                                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                                 </button>
                             </div>
 
-                            <form onSubmit={handleCreateTask} className="space-y-5">
+                            <form onSubmit={handleCreateTask} className="space-y-5 relative z-10">
                                 <div>
-                                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Task Title</label>
+                                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5 ml-1">Task Title</label>
                                     <input
                                         type="text"
                                         required
                                         value={newTask.title}
                                         onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
                                         placeholder="E.g., Review Q3 Marketing Metrics"
-                                        className="w-full px-4 py-3 rounded-xl bg-slate-50/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                                        className="w-full px-5 py-3.5 rounded-2xl bg-slate-50/50 dark:bg-slate-800/50 text-slate-900 dark:text-white backdrop-blur-md border border-slate-200/80 dark:border-slate-700/80 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all shadow-sm placeholder:text-slate-400"
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Description <span className="text-slate-400 font-normal">(optional)</span></label>
+                                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5 ml-1">Description <span className="text-slate-400 font-normal">(optional)</span></label>
                                     <textarea
                                         value={newTask.description}
                                         onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
                                         placeholder="Add more details about this task..."
                                         rows={2}
-                                        className="w-full px-4 py-3 rounded-xl bg-slate-50/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all resize-none"
+                                        className="w-full px-5 py-3.5 rounded-2xl bg-slate-50/50 dark:bg-slate-800/50 text-slate-900 dark:text-white backdrop-blur-md border border-slate-200/80 dark:border-slate-700/80 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all resize-none shadow-sm placeholder:text-slate-400"
                                     />
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-2 gap-5">
                                     <div>
-                                        <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Priority</label>
+                                        <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5 ml-1">Priority</label>
                                         <select
                                             value={newTask.priority}
                                             onChange={(e) => setNewTask({ ...newTask, priority: e.target.value })}
-                                            className="w-full px-4 py-3 rounded-xl bg-slate-50/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                                            className="w-full px-5 py-3.5 rounded-2xl bg-slate-50/50 dark:bg-slate-800/50 text-slate-900 dark:text-white backdrop-blur-md border border-slate-200/80 dark:border-slate-700/80 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all shadow-sm appearance-none cursor-pointer"
                                         >
                                             <option value="Low">Low</option>
                                             <option value="Medium">Medium</option>
@@ -753,11 +874,11 @@ const Dashboard = () => {
                                         </select>
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Tag</label>
+                                        <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5 ml-1">Tag</label>
                                         <select
                                             value={newTask.tag}
                                             onChange={(e) => setNewTask({ ...newTask, tag: e.target.value })}
-                                            className="w-full px-4 py-3 rounded-xl bg-slate-50/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                                            className="w-full px-5 py-3.5 rounded-2xl bg-slate-50/50 dark:bg-slate-800/50 text-slate-900 dark:text-white backdrop-blur-md border border-slate-200/80 dark:border-slate-700/80 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all shadow-sm appearance-none cursor-pointer"
                                         >
                                             {['Design', 'Development', 'Marketing', 'Research', 'Bug Fix', 'Planning', 'Content', 'Other'].map(t => (
                                                 <option key={t} value={t}>{t}</option>
@@ -767,17 +888,17 @@ const Dashboard = () => {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Due Date</label>
+                                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5 ml-1">Due Date</label>
                                     <input
                                         type="date"
                                         required
                                         value={newTask.dueDate}
                                         onChange={(e) => setNewTask({ ...newTask, dueDate: e.target.value })}
-                                        className="w-full px-4 py-3 rounded-xl bg-slate-50/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-slate-600 dark:text-slate-300"
+                                        className="w-full px-5 py-3.5 rounded-2xl bg-slate-50/50 dark:bg-slate-800/50 text-slate-900 dark:text-white backdrop-blur-md border border-slate-200/80 dark:border-slate-700/80 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all shadow-sm cursor-pointer"
                                     />
                                 </div>
 
-                                <button type="submit" className="w-full py-3.5 mt-2 bg-blue-600 text-white font-bold rounded-xl shadow-lg hover:bg-blue-700 hover:-translate-y-0.5 transition-all duration-300">
+                                <button type="submit" className="w-full py-4 mt-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-2xl shadow-[0_8px_20px_rgba(37,99,235,0.2)] hover:shadow-[0_8px_25px_rgba(37,99,235,0.4)] hover:-translate-y-1 transition-all duration-300">
                                     Create Task
                                 </button>
                             </form>

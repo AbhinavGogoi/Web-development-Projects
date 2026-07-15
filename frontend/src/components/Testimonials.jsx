@@ -1,7 +1,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 
 const Testimonials = () => {
+    const navigate = useNavigate();
     // Sample review data
     const reviews = [
         {
@@ -144,8 +146,8 @@ const Testimonials = () => {
                     <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight mb-6 md:mb-0">
                         Are u The Next One!
                     </h2>
-                    <button className="px-10 py-4 bg-white text-blue-600 font-bold rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 text-lg">
-                        <a href="/login">Join Now</a>
+                    <button onClick={() => navigate('/login')} className="px-10 py-4 bg-white text-blue-600 font-bold rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 text-lg">
+                        Join Now
                     </button>
                 </motion.div>
 

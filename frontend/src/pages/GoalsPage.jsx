@@ -272,7 +272,7 @@ const GoalsPage = () => {
             <div className="w-full h-full bg-gradient-to-br from-blue-100 to-sky-50 dark:from-slate-950 dark:to-slate-900 flex overflow-hidden shadow-2xl transition-colors duration-500">
                 <Sidebar activePage="goals" goalCount={goals.length} />
 
-                <main className="flex-1 flex flex-col h-full overflow-y-auto overflow-x-hidden p-6 md:p-8">
+                <main className="flex-1 flex flex-col h-full overflow-y-auto overflow-x-hidden min-w-0 p-6 md:p-8">
 
                     {/* ====== HEADER ====== */}
                     <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
@@ -302,7 +302,7 @@ const GoalsPage = () => {
                         className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8"
                     >
                         {/* Overall Progress Donut */}
-                        <div className="col-span-2 md:col-span-1 bg-white dark:bg-slate-800 p-5 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col items-center justify-center">
+                        <div className="col-span-2 md:col-span-1 bg-white/60 dark:bg-white/10 dark:backdrop-blur-2xl p-5 rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.3)] border border-white/60 dark:border-white/10 flex flex-col items-center justify-center">
                             <div className="relative w-20 h-20">
                                 <svg className="w-20 h-20 transform -rotate-90" viewBox="0 0 80 80">
                                     <circle cx="40" cy="40" r="32" stroke="#f1f5f9" strokeWidth="8" fill="transparent" />
@@ -336,7 +336,7 @@ const GoalsPage = () => {
                                 initial={{ opacity: 0, y: 15 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.1 * i, duration: 0.4 }}
-                                className="bg-white dark:bg-slate-800 p-4 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col items-center justify-center gap-1 hover:shadow-md transition-shadow"
+                                className="bg-white/60 dark:bg-white/10 dark:backdrop-blur-2xl p-4 rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.3)] border border-white/60 dark:border-white/10 flex flex-col items-center justify-center gap-1 hover:-translate-y-1 transition-all duration-300"
                             >
                                 <span className="text-2xl">{stat.icon}</span>
                                 <span className="text-2xl font-extrabold text-slate-900 dark:text-white">{stat.value}</span>
@@ -351,9 +351,9 @@ const GoalsPage = () => {
                             <button
                                 key={tab}
                                 onClick={() => setFilter(tab)}
-                                className={`px-4 py-2 rounded-xl text-sm font-bold transition-all whitespace-nowrap ${filter === tab
-                                    ? 'bg-slate-900 text-white shadow-md'
-                                    : 'bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700 hover:bg-slate-50/50 dark:bg-slate-900/50'
+                                className={`px-4 py-2 rounded-xl text-sm font-bold transition-all whitespace-nowrap backdrop-blur-md ${filter === tab
+                                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/20'
+                                    : 'bg-white/60 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 border border-white/50 dark:border-slate-700/50 hover:bg-white/80 dark:hover:bg-slate-700/50'
                                     }`}
                             >
                                 {tab === 'All' ? `All (${stats.total})` :
@@ -409,7 +409,9 @@ const GoalsPage = () => {
                                         key={goal._id}
                                         variants={cardVariants}
                                         layout
-                                        className={`bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/60 dark:border-slate-700/50 flex flex-col relative group overflow-hidden hover:shadow-xl hover:border-slate-200 dark:border-slate-700 transition-all duration-300 ${isExpanded ? 'ring-2 ring-blue-500/20' : ''}`}
+                                        whileHover={{ scale: 1.02, y: -4 }}
+                                        whileTap={{ scale: 0.98 }}
+                                        className={`bg-white dark:bg-white/10 backdrop-blur-2xl rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.3)] border border-slate-100 dark:border-white/10 flex flex-col relative group overflow-hidden hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] dark:hover:shadow-[0_8px_30px_rgba(0,0,0,0.5)] transition-shadow duration-300 ${isExpanded ? 'ring-2 ring-blue-500/20' : ''}`}
                                     >
                                         {/* Subtle gradient accent at top */}
                                         <div className="h-1 w-full" style={{ background: `linear-gradient(90deg, ${progressColor}, ${progressColor}44)` }}></div>

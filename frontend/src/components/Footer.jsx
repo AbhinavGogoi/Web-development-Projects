@@ -1,6 +1,8 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Footer = () => {
+    const navigate = useNavigate();
     return (
         // mt-24 pushes the entire footer section down to give the pricing section some breathing room
         <footer className="w-full relative mt-24">
@@ -29,8 +31,8 @@ const Footer = () => {
                         <p className="text-slate-300 font-medium text-sm md:text-base max-w-2xl mx-auto mb-8">
                             Discover AI-powered task creation, analyze your weekly goals, and secure your schedule with seamless calendar sync — all in one platform.
                         </p>
-                        <button className="px-8 py-3.5 bg-white text-slate-900 font-bold rounded-xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-                            <a href="/login">Get Started for Free</a>
+                        <button onClick={() => navigate('/login')} className="px-8 py-3.5 bg-white text-slate-900 font-bold rounded-xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                            Get Started for Free
                         </button>
                     </div>
                 </div>
