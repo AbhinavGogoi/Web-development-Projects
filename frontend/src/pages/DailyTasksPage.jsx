@@ -24,7 +24,7 @@ const DailyTasksPage = () => {
     const fetchDailyTasks = async () => {
         try {
             const token = localStorage.getItem('token');
-            const res = await fetch(`${API_BASE}/api/dailytasks`, {
+            const res = await fetch(`${API_BASE}/dailytasks`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (res.ok) {
@@ -55,7 +55,7 @@ const DailyTasksPage = () => {
 
         try {
             const token = localStorage.getItem('token');
-            const res = await fetch(`${API_BASE}/api/dailytasks`, {
+            const res = await fetch(`${API_BASE}/dailytasks`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -82,7 +82,7 @@ const DailyTasksPage = () => {
 
         try {
             const token = localStorage.getItem('token');
-            await fetch(`${API_BASE}/api/dailytasks/${id}`, {
+            await fetch(`${API_BASE}/dailytasks/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -105,7 +105,7 @@ const DailyTasksPage = () => {
 
         try {
             const token = localStorage.getItem('token');
-            const res = await fetch(`${API_BASE}/api/dailytasks/${id}`, {
+            const res = await fetch(`${API_BASE}/dailytasks/${id}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
