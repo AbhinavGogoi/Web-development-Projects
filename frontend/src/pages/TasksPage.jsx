@@ -462,7 +462,7 @@ const TasksPage = () => {
                                 </svg>
                             </span>
                             <div>
-                                <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">My Tasks</h1>
+                                <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Deadlines</h1>
                                 <p className="text-slate-500 dark:text-slate-400 font-medium text-sm mt-0.5">Drag and drop to organize your workflow.</p>
                             </div>
                         </div>
@@ -471,7 +471,7 @@ const TasksPage = () => {
                             className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl font-bold shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all active:scale-[0.98] flex-shrink-0 w-full md:w-auto"
                         >
                             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
-                            Add Task
+                            Add Deadline
                         </button>
                     </header>
 

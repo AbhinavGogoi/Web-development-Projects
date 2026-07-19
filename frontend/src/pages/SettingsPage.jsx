@@ -348,28 +348,69 @@ const SettingsPage = () => {
 
     const renderNotifications = () => (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-6">
-            <h3 className="font-bold text-slate-800 dark:text-white text-lg mb-4">Notification Channels</h3>
-            
-            {[
-                { key: 'emailAlerts', title: 'Email Alerts', desc: 'Receive updates via email' },
-                { key: 'pushNotifications', title: 'Push Notifications', desc: 'Receive browser notifications' },
-                { key: 'weeklyDigest', title: 'Weekly Digest', desc: 'A weekly summary of your goals and tasks' },
-                { key: 'taskReminders', title: 'Task Reminders', desc: 'Alerts when tasks are due soon or overdue' },
-            ].map(item => (
-                <div key={item.key} className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700">
-                    <div>
-                        <span className="block font-bold text-slate-700 dark:text-white">{item.title}</span>
-                        <span className="block text-xs text-slate-500 dark:text-slate-400">{item.desc}</span>
-                    </div>
-                    <label className="cursor-pointer">
-                        <div className="relative">
-                            <input type="checkbox" className="sr-only" checked={notifications[item.key]} onChange={(e) => setNotifications({...notifications, [item.key]: e.target.checked})} />
-                            <div className={`block w-12 h-7 rounded-full transition-colors ${notifications[item.key] ? 'bg-emerald-500' : 'bg-slate-200 dark:bg-slate-700'}`}></div>
-                            <div className={`absolute left-1 top-1 bg-white w-5 h-5 rounded-full transition-transform ${notifications[item.key] ? 'transform translate-x-5' : ''}`}></div>
-                        </div>
-                    </label>
+            <div className="flex items-center gap-4 mb-8">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30">
+                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                    </svg>
                 </div>
-            ))}
+                <div>
+                    <h3 className="font-extrabold text-slate-900 dark:text-white text-2xl tracking-tight">Notification Channels</h3>
+                    <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">Choose how you want to be notified</p>
+                </div>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                {[
+                    { key: 'emailAlerts', title: 'Email Alerts', desc: 'Receive updates via email', icon: 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z', color: 'blue' },
+                    { key: 'pushNotifications', title: 'Push Notifications', desc: 'Browser push notifications', icon: 'M13 10V3L4 14h7v7l9-11h-7z', color: 'amber' },
+                    { key: 'weeklyDigest', title: 'Weekly Digest', desc: 'A weekly summary of goals', icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z', color: 'emerald' },
+                    { key: 'taskReminders', title: 'Task Reminders', desc: 'Alerts for due tasks', icon: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z', color: 'purple' },
+                ].map((item, index) => {
+                    const colorMap = {
+                        blue: { bgActive: 'bg-blue-100 dark:bg-blue-500/20', textActive: 'text-blue-600 dark:text-blue-400', toggle: 'bg-blue-500 shadow-blue-500/30', borderHover: 'hover:border-blue-300 dark:hover:border-blue-500/30', glow: 'from-blue-500/5' },
+                        amber: { bgActive: 'bg-amber-100 dark:bg-amber-500/20', textActive: 'text-amber-600 dark:text-amber-400', toggle: 'bg-amber-500 shadow-amber-500/30', borderHover: 'hover:border-amber-300 dark:hover:border-amber-500/30', glow: 'from-amber-500/5' },
+                        emerald: { bgActive: 'bg-emerald-100 dark:bg-emerald-500/20', textActive: 'text-emerald-600 dark:text-emerald-400', toggle: 'bg-emerald-500 shadow-emerald-500/30', borderHover: 'hover:border-emerald-300 dark:hover:border-emerald-500/30', glow: 'from-emerald-500/5' },
+                        purple: { bgActive: 'bg-purple-100 dark:bg-purple-500/20', textActive: 'text-purple-600 dark:text-purple-400', toggle: 'bg-purple-500 shadow-purple-500/30', borderHover: 'hover:border-purple-300 dark:hover:border-purple-500/30', glow: 'from-purple-500/5' }
+                    };
+                    const colors = colorMap[item.color];
+                    const isActive = notifications[item.key];
+
+                    return (
+                        <motion.div 
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: index * 0.1 }}
+                            key={item.key} 
+                            className={`group relative flex items-start gap-4 p-5 rounded-3xl transition-all duration-300 border ${isActive ? 'bg-white dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 shadow-xl shadow-slate-200/50 dark:shadow-none scale-[1.02]' : 'bg-slate-50/50 dark:bg-slate-800/30 border-slate-100 dark:border-slate-700/50'} ${colors.borderHover}`}
+                        >
+                            {/* Glow effect */}
+                            {isActive && (
+                                <div className={`absolute inset-0 bg-gradient-to-br ${colors.glow} to-transparent rounded-3xl pointer-events-none`}></div>
+                            )}
+                            
+                            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 transition-colors ${isActive ? `${colors.bgActive} ${colors.textActive}` : 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500'}`}>
+                                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
+                                </svg>
+                            </div>
+                            
+                            <div className="flex-1 pr-2 pt-1">
+                                <span className={`block font-bold mb-1 transition-colors ${isActive ? 'text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400'}`}>{item.title}</span>
+                                <span className="block text-xs font-medium text-slate-500 dark:text-slate-500">{item.desc}</span>
+                            </div>
+                            
+                            <label className="cursor-pointer flex-shrink-0 mt-2">
+                                <div className="relative">
+                                    <input type="checkbox" className="sr-only" checked={isActive} onChange={(e) => setNotifications({...notifications, [item.key]: e.target.checked})} />
+                                    <div className={`block w-12 h-6 rounded-full transition-all duration-300 ${isActive ? `${colors.toggle} shadow-md` : 'bg-slate-200 dark:bg-slate-700'}`}></div>
+                                    <div className={`absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform duration-300 shadow-sm ${isActive ? 'transform translate-x-6' : ''}`}></div>
+                                </div>
+                            </label>
+                        </motion.div>
+                    );
+                })}
+            </div>
         </motion.div>
     );
 

@@ -18,7 +18,7 @@ const Sidebar = ({ activePage = 'dashboard', taskCount = 0, goalCount = 0, onLog
         },
         {
             id: 'tasks',
-            label: 'My Tasks',
+            label: 'Deadlines',
             path: '/tasks',
             badge: taskCount,
             icon: (
