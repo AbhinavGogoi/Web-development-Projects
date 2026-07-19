@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const Sidebar = ({ activePage = 'dashboard', taskCount = 0, goalCount = 0, onLogout }) => {
     const navigate = useNavigate();
+    const [isMobileOpen, setIsMobileOpen] = useState(false);
 
     const navItems = [
         {
@@ -39,10 +40,8 @@ const Sidebar = ({ activePage = 'dashboard', taskCount = 0, goalCount = 0, onLog
         {
             id: 'goals',
             label: 'Weekly Goals',
-            // FIX: Replaced null with the correct route path
             path: '/goals',
             badge: goalCount,
-            // FIX: Removed action: onCreateGoal so the path takes priority
             icon: (
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
@@ -52,6 +51,7 @@ const Sidebar = ({ activePage = 'dashboard', taskCount = 0, goalCount = 0, onLog
     ];
 
     const handleNavClick = (item) => {
+        setIsMobileOpen(false); // Close mobile menu when navigating
         if (item.action) {
             item.action();
         } else if (item.path) {
@@ -59,8 +59,32 @@ const Sidebar = ({ activePage = 'dashboard', taskCount = 0, goalCount = 0, onLog
         }
     };
 
+    const handleGeneralNav = (path) => {
+        setIsMobileOpen(false);
+        navigate(path);
+    };
+
     return (
-        <aside className="w-64 flex-shrink-0 bg-white/50 dark:bg-slate-900/50 border-r border-slate-200/60 dark:border-slate-800/60 p-6 flex flex-col justify-between hidden md:flex transition-colors duration-500">
+        <>
+            {/* Mobile Hamburger Button */}
+            <button
+                onClick={() => setIsMobileOpen(true)}
+                className="md:hidden fixed bottom-6 right-6 z-[60] w-14 h-14 bg-blue-600 rounded-full shadow-[0_8px_30px_rgba(37,99,235,0.4)] flex items-center justify-center text-white active:scale-95 transition-transform"
+            >
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+
+            {/* Mobile Overlay */}
+            {isMobileOpen && (
+                <div 
+                    className="md:hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[70]"
+                    onClick={() => setIsMobileOpen(false)}
+                />
+            )}
+
+            <aside className={`fixed inset-y-0 left-0 z-[80] w-72 flex-shrink-0 bg-white dark:bg-slate-900 border-r border-slate-200/60 dark:border-slate-800/60 p-6 flex-col justify-between transition-transform duration-300 md:relative md:translate-x-0 md:w-64 md:bg-white/50 md:dark:bg-slate-900/50 ${isMobileOpen ? 'translate-x-0 flex' : '-translate-x-full hidden md:flex'}`}>
             <div>
                 {/* Brand Logo */}
                 <div className="flex items-center gap-3 mb-10 px-2">
@@ -100,7 +124,7 @@ const Sidebar = ({ activePage = 'dashboard', taskCount = 0, goalCount = 0, onLog
                 <nav className="space-y-1 mt-8">
                     <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-4 px-2">General</p>
                     <button 
-                        onClick={() => navigate('/settings')} 
+                        onClick={() => handleGeneralNav('/settings')} 
                         className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-2xl font-medium transition-colors text-left relative ${activePage === 'settings'
                             ? 'bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-sm font-bold border border-slate-100 dark:border-slate-700'
                             : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-slate-800/60'
@@ -114,7 +138,7 @@ const Sidebar = ({ activePage = 'dashboard', taskCount = 0, goalCount = 0, onLog
                         Settings
                     </button>
                     <button 
-                        onClick={() => navigate('/help')} 
+                        onClick={() => handleGeneralNav('/help')} 
                         className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-2xl font-medium transition-colors text-left relative ${activePage === 'help'
                             ? 'bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-sm font-bold border border-slate-100 dark:border-slate-700'
                             : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-slate-800/60'
@@ -138,13 +162,14 @@ const Sidebar = ({ activePage = 'dashboard', taskCount = 0, goalCount = 0, onLog
                 <h4 className="font-bold mb-1 relative z-10">Meet your AI Assistant</h4>
                 <p className="text-xs text-slate-400 mb-4 relative z-10">Chat normally, create tasks instantly.</p>
                 <button 
-                    onClick={() => navigate('/chat')}
+                    onClick={() => handleGeneralNav('/chat')}
                     className="w-full py-2 bg-blue-600 hover:bg-blue-500 rounded-xl text-sm font-bold transition-colors relative z-10"
                 >
                     Open Chat
                 </button>
             </div>
         </aside>
+        </>
     );
 };
 

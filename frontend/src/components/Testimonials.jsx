@@ -56,22 +56,22 @@ const Testimonials = () => {
 
                         {/* --- THE STEPPED WHITE TEXT BOX --- */}
                         {/* --- THE UNIFIED WHITE TEXT BOX --- */}
-                        <div className="absolute top-0 left-0 bg-white p-8 rounded-br-[2rem] w-max z-10">
+                        <div className="absolute top-0 left-0 bg-white dark:bg-slate-900 p-8 rounded-br-[2rem] w-max z-10">
 
                             {/* All three lines of text combined into one heading */}
-                            <h3 className="text-2xl md:text-[1.35rem] font-extrabold text-slate-900 leading-tight">
+                            <h3 className="text-2xl md:text-[1.35rem] font-extrabold text-slate-900 dark:text-white leading-tight">
                                 Hear From Our<br />
                                 Satisfied Clients<br />
                                 Have To Say <span className="text-blue-600">♥</span>
                             </h3>
 
                             {/* Notch 1: Top-Right (Blends the top edge of the box into the image) */}
-                            <svg className="absolute top-0 -right-8 w-8 h-8 text-white fill-current" viewBox="0 0 32 32">
+                            <svg className="absolute top-0 -right-8 w-8 h-8 text-white dark:text-slate-900 fill-current" viewBox="0 0 32 32">
                                 <path d="M0 32V0H32C14.3269 0 0 14.3269 0 32Z" />
                             </svg>
 
                             {/* Notch 2: Bottom-Left (Blends the left edge of the box into the image) */}
-                            <svg className="absolute -bottom-8 left-0 w-8 h-8 text-white fill-current" viewBox="0 0 32 32">
+                            <svg className="absolute -bottom-8 left-0 w-8 h-8 text-white dark:text-slate-900 fill-current" viewBox="0 0 32 32">
                                 <path d="M0 32V0H32C14.3269 0 0 14.3269 0 32Z" />
                             </svg>
 
@@ -93,7 +93,7 @@ const Testimonials = () => {
 
                                 {/* THE MAGIC MASK for the rotating button */}
                                 <div
-                                    className="absolute inset-0 bg-[#E8F1FC] rounded-3xl shadow-sm transition-shadow duration-300 group-hover:shadow-md"
+                                    className="absolute inset-0 bg-[#E8F1FC] dark:bg-slate-800 rounded-3xl shadow-sm transition-shadow duration-300 group-hover:shadow-md"
                                     style={{
                                         WebkitMaskImage: 'radial-gradient(circle 32px at calc(100% - 24px) calc(100% - 24px), transparent 32px, black 33px)',
                                         maskImage: 'radial-gradient(circle 32px at calc(100% - 24px) calc(100% - 24px), transparent 32px, black 33px)'
@@ -111,7 +111,7 @@ const Testimonials = () => {
                                                 </svg>
                                             ))}
                                         </div>
-                                        <p className="text-slate-700 font-medium text-sm md:text-base leading-relaxed mb-6 pr-8">
+                                        <p className="text-slate-700 dark:text-slate-300 font-medium text-sm md:text-base leading-relaxed mb-6 pr-8">
                                             "{review.text}"
                                         </p>
                                     </div>
@@ -120,8 +120,8 @@ const Testimonials = () => {
                                     <div className="flex items-center gap-3">
                                         <img src={review.avatar} alt={review.name} className="w-10 h-10 rounded-full shadow-sm" />
                                         <div>
-                                            <h4 className="font-bold text-sm text-slate-900">{review.name}</h4>
-                                            <p className="text-xs text-slate-500">{review.title}</p>
+                                            <h4 className="font-bold text-sm text-slate-900 dark:text-white">{review.name}</h4>
+                                            <p className="text-xs text-slate-500 dark:text-slate-400">{review.title}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -141,12 +141,12 @@ const Testimonials = () => {
                 {/* Bottom Banner */}
                 <motion.div
                     variants={itemVariants}
-                    className="w-full bg-white/40 backdrop-blur-xl border border-white/50 rounded-[2.5rem] p-8 md:p-10 flex flex-col md:flex-row justify-between items-center shadow-xl mt-4"
+                    className="w-full bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl border border-white/50 dark:border-slate-700/50 rounded-[2.5rem] p-8 md:p-10 flex flex-col md:flex-row justify-between items-center shadow-xl mt-4"
                 >
-                    <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight mb-6 md:mb-0">
+                    <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-6 md:mb-0">
                         Are u The Next One!
                     </h2>
-                    <button onClick={() => navigate('/login')} className="px-10 py-4 bg-white text-blue-600 font-bold rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 text-lg">
+                    <button onClick={() => navigate('/login')} className="px-10 py-4 bg-white dark:bg-blue-600 text-blue-600 dark:text-white font-bold rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 text-lg">
                         Join Now
                     </button>
                 </motion.div>

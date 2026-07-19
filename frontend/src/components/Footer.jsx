@@ -41,7 +41,7 @@ const Footer = () => {
             {/* THE WHITE FOOTER BASE 
         pt-40 adds massive padding to the top so the text isn't hidden under the floating CTA.
       */}
-            <div className="bg-white rounded-t-[3rem] pt-40 pb-12 px-6 md:px-12 w-full shadow-2xl">
+            <div className="bg-white dark:bg-slate-900 rounded-t-[3rem] pt-40 pb-12 px-6 md:px-12 w-full shadow-2xl">
                 <div className="max-w-6xl mx-auto">
 
                     {/* Main Footer Grid */}
@@ -54,9 +54,9 @@ const Footer = () => {
                                 <div className="w-8 h-8 rounded-xl bg-gradient-to-b from-blue-400 to-blue-700 flex items-start justify-center relative overflow-hidden shadow-inner">
                                     <div className="absolute top-0 w-full h-1/3 bg-white/30 rounded-t-xl"></div>
                                 </div>
-                                <span className="text-slate-900 font-bold text-2xl tracking-tight">Taskify</span>
+                                <span className="text-slate-900 dark:text-white font-bold text-2xl tracking-tight">Taskify</span>
                             </div>
-                            <p className="text-slate-600 text-sm font-medium leading-relaxed mb-8 pr-4">
+                            <p className="text-slate-600 dark:text-slate-400 text-sm font-medium leading-relaxed mb-8 pr-4">
                                 A modern task management platform that combines AI automation, calendar intelligence, and smart goal tracking to help you execute your workflow with precision.
                             </p>
 
@@ -77,31 +77,31 @@ const Footer = () => {
                         {/* Links Columns (Spans 8 cols on desktop) */}
                         <div className="md:col-span-8 grid grid-cols-2 md:grid-cols-3 gap-8">
                             <div>
-                                <h4 className="text-slate-900 font-extrabold mb-6">Product</h4>
-                                <ul className="space-y-4 text-sm font-medium text-slate-600">
-                                    <li><a href="#features" className="hover:text-blue-600 transition-colors">Features</a></li>
-                                    <li><a href="#pricing" className="hover:text-blue-600 transition-colors">Pricing</a></li>
-                                    <li><a href="#dashboard" className="hover:text-blue-600 transition-colors">Dashboard Preview</a></li>
-                                    <li><a href="#" className="hover:text-blue-600 transition-colors">Changelog</a></li>
+                                <h4 className="text-slate-900 dark:text-white font-extrabold mb-6">Product</h4>
+                                <ul className="space-y-4 text-sm font-medium text-slate-600 dark:text-slate-400">
+                                    <li><a href="#features" className="hover:text-blue-600 dark:hover:text-white transition-colors">Features</a></li>
+                                    <li><a href="#pricing" className="hover:text-blue-600 dark:hover:text-white transition-colors">Pricing</a></li>
+                                    <li><a href="#dashboard" className="hover:text-blue-600 dark:hover:text-white transition-colors">Dashboard Preview</a></li>
+                                    <li><a href="#" className="hover:text-blue-600 dark:hover:text-white transition-colors">Changelog</a></li>
                                 </ul>
                             </div>
 
                             <div>
-                                <h4 className="text-slate-900 font-extrabold mb-6">Resources</h4>
-                                <ul className="space-y-4 text-sm font-medium text-slate-600">
-                                    <li><a href="#" className="hover:text-blue-600 transition-colors">Help Center</a></li>
-                                    <li><a href="#" className="hover:text-blue-600 transition-colors">Productivity Tips</a></li>
-                                    <li><a href="#" className="hover:text-blue-600 transition-colors">API Documentation</a></li>
-                                    <li><a href="#" className="hover:text-blue-600 transition-colors">Community Forum</a></li>
+                                <h4 className="text-slate-900 dark:text-white font-extrabold mb-6">Resources</h4>
+                                <ul className="space-y-4 text-sm font-medium text-slate-600 dark:text-slate-400">
+                                    <li><a href="#" className="hover:text-blue-600 dark:hover:text-white transition-colors">Help Center</a></li>
+                                    <li><a href="#" className="hover:text-blue-600 dark:hover:text-white transition-colors">Productivity Tips</a></li>
+                                    <li><a href="#" className="hover:text-blue-600 dark:hover:text-white transition-colors">API Documentation</a></li>
+                                    <li><a href="#" className="hover:text-blue-600 dark:hover:text-white transition-colors">Community Forum</a></li>
                                 </ul>
                             </div>
 
                             <div>
-                                <h4 className="text-slate-900 font-extrabold mb-6">Legal</h4>
-                                <ul className="space-y-4 text-sm font-medium text-slate-600">
-                                    <li><a href="#" className="hover:text-blue-600 transition-colors">Terms of Service</a></li>
-                                    <li><a href="#" className="hover:text-blue-600 transition-colors">Privacy Policy / GDPR</a></li>
-                                    <li><a href="#" className="hover:text-blue-600 transition-colors">Cookie Policy</a></li>
+                                <h4 className="text-slate-900 dark:text-white font-extrabold mb-6">Legal</h4>
+                                <ul className="space-y-4 text-sm font-medium text-slate-600 dark:text-slate-400">
+                                    <li><a href="#" className="hover:text-blue-600 dark:hover:text-white transition-colors">Terms of Service</a></li>
+                                    <li><a href="#" className="hover:text-blue-600 dark:hover:text-white transition-colors">Privacy Policy / GDPR</a></li>
+                                    <li><a href="#" className="hover:text-blue-600 dark:hover:text-white transition-colors">Cookie Policy</a></li>
                                 </ul>
                             </div>
                         </div>

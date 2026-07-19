@@ -60,7 +60,7 @@ const HeroSection = () => {
                 >
                     Plan your week.<br />
                     {/* Using serif & italic to match your reference image's elegant look */}
-                    <span className="font-serif italic text-black font-medium">Execute with AI.</span>
+                    <span className="font-serif italic text-black dark:text-sky-300 font-medium">Execute with AI.</span>
                 </motion.h1>
 
                 <motion.p

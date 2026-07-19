@@ -22,10 +22,10 @@ const Features = () => {
 
                 {/* Section Header with Upgraded Typography */}
                 <div className="text-center mb-20">
-                    <h2 className="font-playfair italic text-6xl md:text-8xl font-['Caveat',_cursive]  text-black tracking-tight">
-                        Everything you need to <span className="font-dancing not-italic text-blue-600">execute.</span>
+                    <h2 className="font-playfair italic text-6xl md:text-8xl font-['Caveat',_cursive]  text-black dark:text-white tracking-tight">
+                        Everything you need to <span className="font-dancing not-italic text-blue-600 dark:text-sky-400">execute.</span>
                     </h2>
-                    <p className="mt-6 text-xl text-slate-600 font-medium max-w-2xl mx-auto">
+                    <p className="mt-6 text-xl text-slate-600 dark:text-slate-300 font-medium max-w-2xl mx-auto">
                         A powerful suite of tools designed to get out of your way and let you focus on what actually matters.
                     </p>
                 </div>
@@ -43,13 +43,13 @@ const Features = () => {
                     <motion.div
                         variants={itemVariants}
                         whileHover={{ scale: 1.02, y: -5 }}
-                        className="md:col-span-1 md:row-span-2 bg-fuchsia-50/90 backdrop-blur-lg p-10 rounded-[2rem] shadow-lg border border-fuchsia-100 hover:shadow-xl transition-all duration-300 flex flex-col items-start justify-between group"
+                        className="md:col-span-1 md:row-span-2 bg-fuchsia-50/90 dark:bg-slate-900/80 backdrop-blur-lg p-10 rounded-[2rem] shadow-lg border border-fuchsia-100 dark:border-slate-800 hover:shadow-xl transition-all duration-300 flex flex-col items-start justify-between group"
                     >
                         <div>
-                            <h3 className="font-dancing text-3xl font-bold text-slate-900 tracking-tight leading-tight mb-4">
+                            <h3 className="font-dancing text-3xl font-bold text-slate-900 dark:text-white tracking-tight leading-tight mb-4">
                                 AI Chatbot<br />Assistant
                             </h3>
-                            <p className="text-slate-600 font-medium text-lg leading-relaxed">
+                            <p className="text-slate-600 dark:text-slate-300 font-medium text-lg leading-relaxed">
                                 Just type naturally. Our NLP engine instantly understands your conversation and creates structured daily tasks automatically.
                             </p>
                         </div>
@@ -65,13 +65,13 @@ const Features = () => {
                     <motion.div
                         variants={itemVariants}
                         whileHover={{ scale: 1.02, y: -5 }}
-                        className="md:col-span-2 md:row-span-1 bg-blue-50/90 backdrop-blur-lg p-10 rounded-[2rem] shadow-lg border border-blue-100 hover:shadow-xl transition-all duration-300 flex flex-row items-center justify-between group overflow-hidden relative"
+                        className="md:col-span-2 md:row-span-1 bg-blue-50/90 dark:bg-slate-900/80 backdrop-blur-lg p-10 rounded-[2rem] shadow-lg border border-blue-100 dark:border-slate-800 hover:shadow-xl transition-all duration-300 flex flex-row items-center justify-between group overflow-hidden relative"
                     >
                         <div className="max-w-sm relative z-10">
-                            <h3 className="font-dancing text-3xl font-bold text-slate-900 tracking-tight mb-4">
+                            <h3 className="font-dancing text-3xl font-bold text-slate-900 dark:text-white tracking-tight mb-4">
                                 Seamless Calendar Sync
                             </h3>
-                            <p className="text-slate-600 font-medium text-lg leading-relaxed">
+                            <p className="text-slate-600 dark:text-slate-300 font-medium text-lg leading-relaxed">
                                 Never miss a deadline. Your tasks automatically sync with your built-in calendar, keeping your schedule perfectly aligned.
                             </p>
                         </div>
@@ -87,13 +87,13 @@ const Features = () => {
                     <motion.div
                         variants={itemVariants}
                         whileHover={{ scale: 1.02, y: -5 }}
-                        className="md:col-span-1 md:row-span-1 bg-emerald-50/90 backdrop-blur-lg p-8 rounded-[2rem] shadow-lg border border-emerald-100 hover:shadow-xl transition-all duration-300 flex flex-col items-start justify-between group"
+                        className="md:col-span-1 md:row-span-1 bg-emerald-50/90 dark:bg-slate-900/80 backdrop-blur-lg p-8 rounded-[2rem] shadow-lg border border-emerald-100 dark:border-slate-800 hover:shadow-xl transition-all duration-300 flex flex-col items-start justify-between group"
                     >
                         <div>
-                            <h3 className="font-dancing text-2xl font-bold text-slate-900 tracking-tight mb-3">
+                            <h3 className="font-dancing text-2xl font-bold text-slate-900 dark:text-white tracking-tight mb-3">
                                 Weekly Goals
                             </h3>
-                            <p className="text-slate-600 font-medium leading-relaxed">
+                            <p className="text-slate-600 dark:text-slate-300 font-medium leading-relaxed">
                                 Watch as your daily tasks dynamically update your broader analytics.
                             </p>
                         </div>
@@ -108,13 +108,13 @@ const Features = () => {
                     <motion.div
                         variants={itemVariants}
                         whileHover={{ scale: 1.02, y: -5 }}
-                        className="md:col-span-1 md:row-span-1 bg-orange-50/90 backdrop-blur-lg p-8 rounded-[2rem] shadow-lg border border-orange-100 hover:shadow-xl transition-all duration-300 flex flex-col items-start justify-between group"
+                        className="md:col-span-1 md:row-span-1 bg-orange-50/90 dark:bg-slate-900/80 backdrop-blur-lg p-8 rounded-[2rem] shadow-lg border border-orange-100 dark:border-slate-800 hover:shadow-xl transition-all duration-300 flex flex-col items-start justify-between group"
                     >
                         <div>
-                            <h3 className="font-dancing text-2xl font-bold text-slate-900 tracking-tight mb-3">
+                            <h3 className="font-dancing text-2xl font-bold text-slate-900 dark:text-white tracking-tight mb-3">
                                 Drag & Drop
                             </h3>
-                            <p className="text-slate-600 font-medium leading-relaxed">
+                            <p className="text-slate-600 dark:text-slate-300 font-medium leading-relaxed">
                                 Organize your workflow effortlessly with a fluid, tactile interface.
                             </p>
                         </div>

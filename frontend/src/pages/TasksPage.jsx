@@ -288,7 +288,8 @@ const TasksPage = () => {
                     priority: editingTask.priority,
                     dueDate: editingTask.dueDate,
                     description: editingTask.description,
-                    tag: editingTask.tag
+                    tag: editingTask.tag,
+                    status: editingTask.status
                 })
             });
             const data = await response.json();
@@ -450,7 +451,7 @@ const TasksPage = () => {
                 />
 
                 {/* Main Content */}
-                <main className="flex-1 flex flex-col h-full overflow-hidden p-6 md:p-8">
+                <main className="flex-1 flex flex-col h-full overflow-y-auto md:overflow-hidden p-4 md:p-8">
 
                     {/* ====== HEADER ====== */}
                     <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-5 flex-shrink-0">
@@ -467,7 +468,7 @@ const TasksPage = () => {
                         </div>
                         <button
                             onClick={() => setIsModalOpen(true)}
-                            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl font-bold shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all active:scale-[0.98] flex-shrink-0"
+                            className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl font-bold shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all active:scale-[0.98] flex-shrink-0 w-full md:w-auto"
                         >
                             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
                             Add Task
@@ -478,7 +479,7 @@ const TasksPage = () => {
                     <motion.div
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="flex items-center gap-3 mb-4 flex-shrink-0 overflow-x-auto pb-1"
+                        className="flex items-center gap-3 mb-4 flex-shrink-0 overflow-x-auto pb-2 w-full no-scrollbar"
                     >
                         {[
                             { label: 'Total', value: stats.total, icon: '📋', color: 'bg-slate-500/10 dark:bg-slate-500/20 text-slate-700 dark:text-slate-300 border-slate-500/20 dark:border-slate-500/30' },
@@ -496,16 +497,16 @@ const TasksPage = () => {
                     </motion.div>
 
                     {/* ====== FILTER BAR ====== */}
-                    <div className="flex flex-wrap items-center gap-3 mb-5 flex-shrink-0">
+                    <div className="flex flex-nowrap md:flex-wrap items-center gap-3 mb-5 flex-shrink-0 overflow-x-auto pb-2 w-full no-scrollbar">
                         {/* Search */}
-                        <div className="relative">
+                        <div className="relative flex-shrink-0">
                             <svg className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                             <input
                                 type="text"
                                 placeholder="Search tasks..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="pl-9 pr-4 py-2.5 bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl border border-white/50 dark:border-slate-700/50 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-[0_4px_15px_rgba(0,0,0,0.03)] dark:shadow-none w-48 hover:bg-white/80 dark:hover:bg-slate-800/80 transition-all placeholder:text-slate-400"
+                                className="pl-9 pr-4 py-2.5 bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl border border-white/50 dark:border-slate-700/50 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-[0_4px_15px_rgba(0,0,0,0.03)] dark:shadow-none w-56 md:w-48 hover:bg-white/80 dark:hover:bg-slate-800/80 transition-all placeholder:text-slate-400"
                             />
                         </div>
 
@@ -575,7 +576,7 @@ const TasksPage = () => {
                     </div>
 
                     {/* ====== KANBAN BOARD ====== */}
-                    <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-5 overflow-hidden min-h-0">
+                    <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-5 md:overflow-hidden min-h-0 pb-24 md:pb-0">
                         {columns.map((col) => {
                             const colTasks = columnTasks[col.status] || [];
                             const isDropTarget = dragOverColumn === col.status;
@@ -583,7 +584,7 @@ const TasksPage = () => {
                             return (
                                 <div
                                     key={col.status}
-                                    className={`flex flex-col rounded-3xl transition-all duration-300 min-h-0 overflow-hidden ${isDropTarget
+                                    className={`flex flex-col rounded-3xl transition-all duration-300 md:min-h-0 md:overflow-hidden ${isDropTarget
                                         ? `bg-blue-50/80 dark:bg-blue-900/20 ring-2 ${col.ringColor} ring-dashed`
                                         : 'bg-white/40 dark:bg-slate-800/40 backdrop-blur-2xl border border-white/60 dark:border-slate-700/50 shadow-xl'
                                         }`}
@@ -603,7 +604,7 @@ const TasksPage = () => {
                                     </div>
 
                                     {/* Column Cards */}
-                                    <div className="flex-1 overflow-y-auto px-3 pb-3 space-y-2.5 min-h-0">
+                                    <div className="flex-1 md:overflow-y-auto px-3 pb-3 space-y-2.5 min-h-[150px] md:min-h-0">
                                         <AnimatePresence mode="popLayout">
                                             {colTasks.length > 0 ? (
                                                 colTasks.map((task) => {
@@ -665,12 +666,37 @@ const TasksPage = () => {
                                                                 )}
                                                             </div>
 
-                                                            {/* Footer: Due Date */}
-                                                            <div className="flex items-center justify-between">
+                                                            {/* Footer: Due Date & Status Quick-Toggles */}
+                                                            <div className="flex items-center justify-between mt-1 pt-3 border-t border-slate-100 dark:border-white/5">
                                                                 <span className={`text-[11px] font-medium flex items-center gap-1 ${dueDisplay.className}`}>
                                                                     <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                                                                     {dueDisplay.text}
                                                                 </span>
+
+                                                                {/* Status Segmented Control (iOS style) */}
+                                                                <div className="flex items-center bg-slate-100 dark:bg-slate-800/80 p-0.5 rounded-lg border border-slate-200 dark:border-slate-700/50" onClick={e => e.stopPropagation()}>
+                                                                    <button
+                                                                        onClick={() => handleUpdateStatus(task._id, 'Pending')}
+                                                                        className={`flex items-center justify-center w-7 h-6 rounded-md transition-all duration-200 ${task.status === 'Pending' ? 'bg-white dark:bg-slate-700 shadow-sm text-amber-500 scale-105' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 opacity-60 hover:opacity-100'}`}
+                                                                        title="Move to To Do"
+                                                                    >
+                                                                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                                                    </button>
+                                                                    <button
+                                                                        onClick={() => handleUpdateStatus(task._id, 'In Progress')}
+                                                                        className={`flex items-center justify-center w-7 h-6 rounded-md transition-all duration-200 ${task.status === 'In Progress' ? 'bg-white dark:bg-slate-700 shadow-sm text-blue-500 scale-105' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 opacity-60 hover:opacity-100'}`}
+                                                                        title="Move to In Progress"
+                                                                    >
+                                                                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                                                                    </button>
+                                                                    <button
+                                                                        onClick={() => handleUpdateStatus(task._id, 'Completed')}
+                                                                        className={`flex items-center justify-center w-7 h-6 rounded-md transition-all duration-200 ${task.status === 'Completed' ? 'bg-white dark:bg-slate-700 shadow-sm text-emerald-500 scale-105' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 opacity-60 hover:opacity-100'}`}
+                                                                        title="Move to Done"
+                                                                    >
+                                                                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                                                                    </button>
+                                                                </div>
                                                             </div>
                                                         </motion.div>
                                                     );
@@ -882,7 +908,19 @@ const TasksPage = () => {
                                     />
                                 </div>
 
-                                <div className="grid grid-cols-3 gap-3">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-bold text-slate-700 mb-1.5">Status</label>
+                                        <select
+                                            value={editingTask.status || 'Pending'}
+                                            onChange={(e) => setEditingTask({ ...editingTask, status: e.target.value })}
+                                            className="w-full px-3 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm"
+                                        >
+                                            <option value="Pending">To Do</option>
+                                            <option value="In Progress">In Progress</option>
+                                            <option value="Completed">Completed</option>
+                                        </select>
+                                    </div>
                                     <div>
                                         <label className="block text-sm font-bold text-slate-700 mb-1.5">Priority</label>
                                         <select

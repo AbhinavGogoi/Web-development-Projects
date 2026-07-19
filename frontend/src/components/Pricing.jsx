@@ -106,22 +106,22 @@ const Pricing = () => {
                 <div className="blur-[8px] opacity-40 select-none pointer-events-none transition-all duration-500">
                 {/* Header & Toggle Section */}
                 <div className="text-center mb-16">
-                    <h2 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight mb-6">
+                    <h2 className="text-4xl md:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-6">
                         Simple, transparent <span className="text-blue-600">pricing.</span>
                     </h2>
 
                     {/* The Pill Toggle */}
-                    <div className="inline-flex items-center bg-white/60 backdrop-blur-md p-1.5 rounded-full border border-white shadow-sm">
+                    <div className="inline-flex items-center bg-white/60 dark:bg-slate-800/60 backdrop-blur-md p-1.5 rounded-full border border-white dark:border-slate-700 shadow-sm">
                         <button
                             onClick={() => setIsAnnual(true)}
-                            className={`px-6 py-2 rounded-full font-semibold text-sm transition-all duration-300 ${isAnnual ? 'bg-slate-900 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'
+                            className={`px-6 py-2 rounded-full font-semibold text-sm transition-all duration-300 ${isAnnual ? 'bg-slate-900 dark:bg-slate-700 text-white shadow-md' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                                 }`}
                         >
                             Annual
                         </button>
                         <button
                             onClick={() => setIsAnnual(false)}
-                            className={`px-6 py-2 rounded-full font-semibold text-sm transition-all duration-300 ${!isAnnual ? 'bg-slate-900 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'
+                            className={`px-6 py-2 rounded-full font-semibold text-sm transition-all duration-300 ${!isAnnual ? 'bg-slate-900 dark:bg-slate-700 text-white shadow-md' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                                 }`}
                         >
                             Monthly
@@ -143,8 +143,8 @@ const Pricing = () => {
                             variants={itemVariants}
                             // The Pro plan is scaled up and uses the dark slate theme
                             className={`relative overflow-hidden rounded-[2.5rem] p-8 md:p-10 transition-all duration-300 flex flex-col h-full ${plan.isPopular
-                                ? 'bg-slate-900 text-white shadow-2xl scale-100 md:scale-105 border-none z-10'
-                                : 'bg-white/80 backdrop-blur-xl text-slate-900 shadow-xl border border-white hover:shadow-2xl'
+                                ? 'bg-slate-900 dark:bg-slate-800 text-white shadow-2xl scale-100 md:scale-105 border-none z-10'
+                                : 'bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl text-slate-900 dark:text-white shadow-xl border border-white dark:border-slate-700 hover:shadow-2xl'
                                 }`}
                         >
                             {/* Soft Yellow/Gold gradient glow at the bottom matching the reference */}
@@ -172,7 +172,7 @@ const Pricing = () => {
                                     <span className="text-5xl font-extrabold tracking-tighter">
                                         ${isAnnual ? plan.annualPrice : plan.monthlyPrice}
                                     </span>
-                                    <span className={`text-sm ml-2 ${plan.isPopular ? 'text-slate-400' : 'text-slate-500'}`}>
+                                    <span className={`text-sm ml-2 ${plan.isPopular ? 'text-slate-400' : 'text-slate-500 dark:text-slate-400'}`}>
                                         / month (USD)
                                     </span>
                                     {isAnnual && (
@@ -182,12 +182,12 @@ const Pricing = () => {
                                     )}
                                 </div>
 
-                                <p className={`text-sm leading-relaxed mb-8 ${plan.isPopular ? 'text-slate-300' : 'text-slate-600'}`}>
+                                <p className={`text-sm leading-relaxed mb-8 ${plan.isPopular ? 'text-slate-300' : 'text-slate-600 dark:text-slate-300'}`}>
                                     {plan.description}
                                 </p>
 
                                 {/* Dashed Divider */}
-                                <div className={`border-t border-dashed w-full mb-8 ${plan.isPopular ? 'border-slate-700' : 'border-slate-200'}`}></div>
+                                <div className={`border-t border-dashed w-full mb-8 ${plan.isPopular ? 'border-slate-700' : 'border-slate-200 dark:border-slate-700'}`}></div>
 
                                 {/* Features List */}
                                 <ul className="space-y-4 mb-8">
@@ -203,12 +203,12 @@ const Pricing = () => {
                                             ) : (
                                                 // Gray X Icon
                                                 <div className="w-5 h-5 flex items-center justify-center flex-shrink-0">
-                                                    <svg className={`w-4 h-4 ${plan.isPopular ? 'text-slate-600' : 'text-slate-400'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                                    <svg className={`w-4 h-4 ${plan.isPopular ? 'text-slate-600' : 'text-slate-400 dark:text-slate-500'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                                                         <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                                                     </svg>
                                                 </div>
                                             )}
-                                            <span className={`text-sm font-medium ${feature.included ? '' : plan.isPopular ? 'text-slate-500 line-through' : 'text-slate-400 line-through'}`}>
+                                            <span className={`text-sm font-medium ${feature.included ? '' : plan.isPopular ? 'text-slate-500 line-through' : 'text-slate-400 dark:text-slate-500 line-through'}`}>
                                                 {feature.name}
                                             </span>
                                         </li>
@@ -219,7 +219,7 @@ const Pricing = () => {
                             {/* Call to Action Button */}
                             <button className={`relative z-10 w-full py-4 rounded-2xl font-bold transition-transform duration-300 hover:scale-105 ${plan.isPopular
                                 ? 'bg-white text-slate-900 shadow-lg hover:shadow-xl'
-                                : 'bg-white/80 text-slate-900 shadow-sm border border-slate-200 hover:bg-white hover:shadow-md'
+                                : 'bg-white/80 dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm border border-slate-200 dark:border-slate-700 hover:bg-white dark:hover:bg-slate-700 hover:shadow-md'
                                 }`}>
                                 {plan.buttonText}
                             </button>

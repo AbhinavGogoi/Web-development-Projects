@@ -272,7 +272,7 @@ const GoalsPage = () => {
             <div className="w-full h-full bg-gradient-to-br from-blue-100 to-sky-50 dark:from-slate-950 dark:to-slate-900 flex overflow-hidden shadow-2xl transition-colors duration-500">
                 <Sidebar activePage="goals" goalCount={goals.length} />
 
-                <main className="flex-1 flex flex-col h-full overflow-y-auto overflow-x-hidden min-w-0 p-6 md:p-8">
+                <main className="flex-1 flex flex-col h-full overflow-y-auto overflow-x-hidden min-w-0 p-4 pb-24 md:p-8 md:pb-8">
 
                     {/* ====== HEADER ====== */}
                     <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
@@ -287,7 +287,7 @@ const GoalsPage = () => {
                         </div>
                         <button
                             onClick={() => setIsModalOpen(true)}
-                            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl font-bold shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all active:scale-[0.98]"
+                            className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl font-bold shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all active:scale-[0.98] w-full md:w-auto"
                         >
                             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
                             New Goal
@@ -346,7 +346,7 @@ const GoalsPage = () => {
                     </motion.div>
 
                     {/* ====== FILTER TABS ====== */}
-                    <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-2">
+                    <div className="flex items-center gap-3 mb-6 overflow-x-auto py-3 px-1 w-full flex-shrink-0 no-scrollbar">
                         {['All', 'On Track', 'At Risk', 'Completed'].map(tab => (
                             <button
                                 key={tab}
