@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import TaskMonitor from './TaskMonitor';
 
 const Sidebar = ({ activePage = 'dashboard', taskCount = 0, goalCount = 0, onLogout }) => {
     const navigate = useNavigate();
@@ -76,6 +77,7 @@ const Sidebar = ({ activePage = 'dashboard', taskCount = 0, goalCount = 0, onLog
 
     return (
         <>
+            <TaskMonitor />
             {/* Mobile Hamburger Button */}
             <button
                 onClick={() => setIsMobileOpen(true)}

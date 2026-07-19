@@ -402,7 +402,26 @@ const SettingsPage = () => {
                             
                             <label className="cursor-pointer flex-shrink-0 mt-2">
                                 <div className="relative">
-                                    <input type="checkbox" className="sr-only" checked={isActive} onChange={(e) => setNotifications({...notifications, [item.key]: e.target.checked})} />
+                                    <input type="checkbox" className="sr-only" checked={isActive} onChange={(e) => {
+                                        const checked = e.target.checked;
+                                        if (item.key === 'pushNotifications' && checked) {
+                                            if ('Notification' in window) {
+                                                Notification.requestPermission().then(permission => {
+                                                    if (permission === 'granted') {
+                                                        setNotifications({...notifications, [item.key]: true});
+                                                        new Notification('Push Notifications Enabled', { body: 'You will now receive alerts for important updates.' });
+                                                    } else {
+                                                        showNotification('Permission denied for Push Notifications', 'error');
+                                                        setNotifications({...notifications, [item.key]: false});
+                                                    }
+                                                });
+                                            } else {
+                                                showNotification('Browser does not support notifications', 'error');
+                                            }
+                                        } else {
+                                            setNotifications({...notifications, [item.key]: checked});
+                                        }
+                                    }} />
                                     <div className={`block w-12 h-6 rounded-full transition-all duration-300 ${isActive ? `${colors.toggle} shadow-md` : 'bg-slate-200 dark:bg-slate-700'}`}></div>
                                     <div className={`absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform duration-300 shadow-sm ${isActive ? 'transform translate-x-6' : ''}`}></div>
                                 </div>
