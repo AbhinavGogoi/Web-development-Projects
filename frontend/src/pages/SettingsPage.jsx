@@ -302,44 +302,100 @@ const SettingsPage = () => {
 
     const renderPreferences = () => (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Theme</label>
-                    <select value={preferences.theme} onChange={(e) => setPreferences({...preferences, theme: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all">
-                        <option value="light">Light Mode</option>
-                        <option value="dark">Dark Mode</option>
-                        <option value="system">System Default</option>
-                    </select>
+            <div className="flex items-center gap-4 mb-8">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center text-white shadow-lg shadow-pink-500/30">
+                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+                    </svg>
                 </div>
                 <div>
-                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Language</label>
-                    <select value={preferences.language} onChange={(e) => setPreferences({...preferences, language: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all">
-                        <option value="English">English</option>
-                        <option value="Spanish">Spanish</option>
-                        <option value="French">French</option>
-                    </select>
+                    <h3 className="font-extrabold text-slate-900 dark:text-white text-2xl tracking-tight">Preferences</h3>
+                    <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">Customize your app experience</p>
                 </div>
-                <div className="md:col-span-2">
-                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Timezone</label>
-                    <select value={preferences.timezone} onChange={(e) => setPreferences({...preferences, timezone: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all">
-                        <option value="UTC-5 (Eastern Time)">UTC-5 (Eastern Time)</option>
-                        <option value="UTC-8 (Pacific Time)">UTC-8 (Pacific Time)</option>
-                        <option value="UTC+0 (London)">UTC+0 (London)</option>
-                        <option value="UTC+1 (Paris)">UTC+1 (Paris)</option>
-                    </select>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                {/* Theme Select */}
+                <div className="group relative p-5 rounded-3xl transition-all duration-300 border bg-white dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 shadow-sm hover:border-pink-300 dark:hover:border-pink-500/30">
+                    <div className="flex items-center gap-3 mb-4">
+                        <div className="w-10 h-10 rounded-xl bg-pink-100 dark:bg-pink-500/20 flex items-center justify-center text-pink-600 dark:text-pink-400">
+                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+                        </div>
+                        <label className="font-bold text-slate-700 dark:text-slate-300">Theme</label>
+                    </div>
+                    <div className="relative">
+                        <select value={preferences.theme} onChange={(e) => setPreferences({...preferences, theme: e.target.value})} className="w-full px-4 py-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500 transition-all font-medium appearance-none cursor-pointer relative z-10">
+                            <option value="light">Light Mode</option>
+                            <option value="dark">Dark Mode</option>
+                            <option value="system">System Default</option>
+                        </select>
+                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 z-20">
+                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Language Select */}
+                <div className="group relative p-5 rounded-3xl transition-all duration-300 border bg-white dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 shadow-sm hover:border-cyan-300 dark:hover:border-cyan-500/30">
+                    <div className="flex items-center gap-3 mb-4">
+                        <div className="w-10 h-10 rounded-xl bg-cyan-100 dark:bg-cyan-500/20 flex items-center justify-center text-cyan-600 dark:text-cyan-400">
+                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" /></svg>
+                        </div>
+                        <label className="font-bold text-slate-700 dark:text-slate-300">Language</label>
+                    </div>
+                    <div className="relative">
+                        <select value={preferences.language} onChange={(e) => setPreferences({...preferences, language: e.target.value})} className="w-full px-4 py-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all font-medium appearance-none cursor-pointer relative z-10">
+                            <option value="English">English</option>
+                            <option value="Spanish">Spanish</option>
+                            <option value="French">French</option>
+                        </select>
+                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 z-20">
+                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Timezone Select */}
+                <div className="md:col-span-2 group relative p-5 rounded-3xl transition-all duration-300 border bg-white dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 shadow-sm hover:border-teal-300 dark:hover:border-teal-500/30">
+                    <div className="flex items-center gap-3 mb-4">
+                        <div className="w-10 h-10 rounded-xl bg-teal-100 dark:bg-teal-500/20 flex items-center justify-center text-teal-600 dark:text-teal-400">
+                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        </div>
+                        <label className="font-bold text-slate-700 dark:text-slate-300">Timezone</label>
+                    </div>
+                    <div className="relative">
+                        <select value={preferences.timezone} onChange={(e) => setPreferences({...preferences, timezone: e.target.value})} className="w-full px-4 py-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all font-medium appearance-none cursor-pointer relative z-10">
+                            <option value="UTC-5 (Eastern Time)">UTC-5 (Eastern Time)</option>
+                            <option value="UTC-8 (Pacific Time)">UTC-8 (Pacific Time)</option>
+                            <option value="UTC+0 (London)">UTC+0 (London)</option>
+                            <option value="UTC+1 (Paris)">UTC+1 (Paris)</option>
+                        </select>
+                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 z-20">
+                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
+                        </div>
+                    </div>
                 </div>
             </div>
             
-            <div className="pt-6 border-t border-slate-100 dark:border-slate-700">
-                <label className="flex items-center gap-3 cursor-pointer">
+            {/* Compact Interface Toggle */}
+            <div className={`mt-6 p-5 rounded-3xl transition-all duration-300 border flex items-center justify-between gap-4 relative overflow-hidden ${preferences.compactMode ? 'bg-white dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 shadow-xl shadow-slate-200/50 dark:shadow-none scale-[1.02]' : 'bg-slate-50/50 dark:bg-slate-800/30 border-slate-100 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/30'}`}>
+                {preferences.compactMode && <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent rounded-3xl pointer-events-none"></div>}
+                
+                <div className="flex items-center gap-4 relative z-10">
+                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 transition-colors ${preferences.compactMode ? 'bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400' : 'bg-slate-100 dark:bg-slate-800 text-slate-400'}`}>
+                        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h7" /></svg>
+                    </div>
+                    <div className="pr-2">
+                        <span className={`block font-bold mb-1 transition-colors ${preferences.compactMode ? 'text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400'}`}>Compact Interface</span>
+                        <span className="block text-xs font-medium text-slate-500">Reduce spacing between elements for a denser view.</span>
+                    </div>
+                </div>
+                
+                <label className="cursor-pointer flex-shrink-0 relative z-10">
                     <div className="relative">
                         <input type="checkbox" className="sr-only" checked={preferences.compactMode} onChange={(e) => setPreferences({...preferences, compactMode: e.target.checked})} />
-                        <div className={`block w-14 h-8 rounded-full transition-colors ${preferences.compactMode ? 'bg-blue-500' : 'bg-slate-200 dark:bg-slate-700'}`}></div>
-                        <div className={`absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition-transform ${preferences.compactMode ? 'transform translate-x-6' : ''}`}></div>
-                    </div>
-                    <div>
-                        <span className="block font-bold text-slate-700 dark:text-white">Compact Interface</span>
-                        <span className="block text-xs text-slate-500 dark:text-slate-400">Reduce spacing between elements for a denser view.</span>
+                        <div className={`block w-12 h-6 rounded-full transition-all duration-300 ${preferences.compactMode ? 'bg-blue-500 shadow-md shadow-blue-500/30' : 'bg-slate-200 dark:bg-slate-700'}`}></div>
+                        <div className={`absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform duration-300 shadow-sm ${preferences.compactMode ? 'transform translate-x-6' : ''}`}></div>
                     </div>
                 </label>
             </div>
