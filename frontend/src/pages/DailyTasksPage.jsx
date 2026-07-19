@@ -7,6 +7,8 @@ import { API_BASE } from '../config';
 const DailyTasksPage = () => {
     const navigate = useNavigate();
     const [tasks, setTasks] = useState([]);
+    const [sidebarTaskCount, setSidebarTaskCount] = useState(0);
+    const [sidebarGoalCount, setSidebarGoalCount] = useState(0);
     const [newTaskText, setNewTaskText] = useState('');
     const [isLoading, setIsLoading] = useState(true);
     const [notification, setNotification] = useState({ show: false, message: '', type: '' });
@@ -24,12 +26,25 @@ const DailyTasksPage = () => {
     const fetchDailyTasks = async () => {
         try {
             const token = localStorage.getItem('token');
-            const res = await fetch(`${API_BASE}/dailytasks`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            if (res.ok) {
-                const data = await res.json();
+            const config = { headers: { 'Authorization': `Bearer ${token}` } };
+            
+            const [dailyRes, taskRes, goalRes] = await Promise.all([
+                fetch(`${API_BASE}/dailytasks`, config),
+                fetch(`${API_BASE}/tasks`, config),
+                fetch(`${API_BASE}/goals`, config)
+            ]);
+
+            if (dailyRes.ok) {
+                const data = await dailyRes.json();
                 setTasks(data);
+            }
+            if (taskRes.ok) {
+                const taskData = await taskRes.json();
+                setSidebarTaskCount((taskData.tasks || []).length);
+            }
+            if (goalRes.ok) {
+                const goalData = await goalRes.json();
+                setSidebarGoalCount((goalData.goals || []).length);
             }
         } catch (error) {
             console.error('Failed to fetch daily tasks:', error);
@@ -148,7 +163,12 @@ const DailyTasksPage = () => {
             <div className="w-full h-full bg-gradient-to-br from-blue-100 to-sky-50 dark:from-slate-950 dark:to-slate-900 flex overflow-hidden shadow-2xl transition-colors duration-500">
                 
                 {/* SIDEBAR */}
-                <Sidebar activePage="daily" onLogout={handleLogout} />
+                <Sidebar 
+                    activePage="daily" 
+                    taskCount={sidebarTaskCount}
+                    goalCount={sidebarGoalCount}
+                    onLogout={handleLogout} 
+                />
 
                 {/* MAIN CONTENT */}
                 <main className="flex-1 flex flex-col h-full overflow-y-auto overflow-x-hidden min-w-0 p-4 md:p-8">
