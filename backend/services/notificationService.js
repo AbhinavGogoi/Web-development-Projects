@@ -3,6 +3,7 @@ const nodemailer = require('nodemailer');
 const User = require('../models/User');
 const Task = require('../models/Task');
 const Goal = require('../models/Goal'); // Assuming Goal model exists
+const DailyTask = require('../models/DailyTask');
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -103,7 +104,18 @@ const initCronJobs = () => {
         }
     });
 
-    console.log('Cron jobs initialized for notifications.');
+    // 3. Daily Task Cleanup (Runs every day at midnight 00:00)
+    cron.schedule('0 0 * * *', async () => {
+        console.log('Running daily task cleanup job...');
+        try {
+            const result = await DailyTask.deleteMany({});
+            console.log(`Deleted ${result.deletedCount} old daily tasks.`);
+        } catch (error) {
+            console.error('Error in daily task cleanup job:', error);
+        }
+    });
+
+    console.log('Cron jobs initialized for notifications and cleanup.');
 };
 
 module.exports = { initCronJobs };
