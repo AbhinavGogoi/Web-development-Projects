@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 // Import useNavigate
 import { Link, useNavigate } from 'react-router-dom';
 import { API_BASE } from '../config';
+import PasswordStrengthIndicator from '../components/PasswordStrengthIndicator';
 
 const Auth = () => {
     const [isLogin, setIsLogin] = useState(true);
@@ -325,6 +326,7 @@ const Auth = () => {
                                                 )}
                                             </button>
                                         </div>
+                                        <PasswordStrengthIndicator password={newPassword} />
                                     </div>
                                     <button type="submit" className="w-full py-3.5 bg-green-600 text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 mt-2">
                                         Reset Password
@@ -402,6 +404,7 @@ const Auth = () => {
                                                 )}
                                             </button>
                                         </div>
+                                        <PasswordStrengthIndicator password={formData.password} />
                                     </div>
                                     <button type="submit" className="w-full py-3.5 bg-blue-600 text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 mt-2">
                                         Create Account

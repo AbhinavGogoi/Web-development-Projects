@@ -4,8 +4,34 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const speakeasy = require('speakeasy');
 const crypto = require('crypto');
-const { sendEmailOTP } = require('../services/emailService');
+const { sendEmailOTP, sendNewLoginAlert } = require('../services/emailService');
 const { sendSMSOTP } = require('../services/smsService');
+
+// Helper function to check and register new devices
+const handleDeviceCheck = async (req, user) => {
+    const ip = req.ip || req.connection.remoteAddress || 'Unknown IP';
+    const userAgent = req.headers['user-agent'] || 'Unknown Device';
+    
+    // Check if this device is already known
+    const isKnown = user.knownDevices?.some(device => device.ip === ip && device.userAgent === userAgent);
+    
+    if (!isKnown) {
+        // Send email alert
+        await sendNewLoginAlert(user.email, ip, userAgent);
+        
+        // Add to known devices
+        await User.updateOne(
+            { _id: user._id }, 
+            { $push: { knownDevices: { ip, userAgent, lastLogin: new Date() } } }
+        );
+    } else {
+        // Update last login time
+        await User.updateOne(
+            { _id: user._id, 'knownDevices.ip': ip, 'knownDevices.userAgent': userAgent },
+            { $set: { 'knownDevices.$.lastLogin': new Date() } }
+        );
+    }
+};
 
 // Helper function to generate a JWT
 const generateToken = (id) => {
@@ -91,6 +117,8 @@ const verifyRegistrationOTP = async (req, res) => {
         const updatedUser = await User.findById(userId);
 
         await OTP.deleteOne({ _id: otpRecord._id });
+        
+        await handleDeviceCheck(req, updatedUser);
 
         res.json({
             success: true,
@@ -128,6 +156,8 @@ const loginUser = async (req, res) => {
             }
 
             // Normal login
+            await handleDeviceCheck(req, user);
+            
             res.json({
                 success: true,
                 token: generateToken(user._id),
@@ -159,6 +189,8 @@ const verifyLogin2FA = async (req, res) => {
         });
 
         if (verified) {
+            await handleDeviceCheck(req, user);
+            
             res.json({
                 success: true,
                 token: generateToken(user._id),

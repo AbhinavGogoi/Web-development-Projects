@@ -22,7 +22,12 @@ const userSchema = new mongoose.Schema({
         taskReminders: { type: Boolean, default: true }
     },
     twoFactorSecret: { type: String, default: null },
-    isTwoFactorEnabled: { type: Boolean, default: false }
+    isTwoFactorEnabled: { type: Boolean, default: false },
+    knownDevices: [{
+        ip: String,
+        userAgent: String,
+        lastLogin: Date
+    }]
 }, { timestamps: true });
 
 module.exports = mongoose.model('User', userSchema);

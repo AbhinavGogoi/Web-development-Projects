@@ -51,6 +51,25 @@ const TasksPage = () => {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [editingTask, setEditingTask] = useState(null);
 
+    // --- Filter State ---
+    const [selectedTag, setSelectedTag] = useState('All');
+    const [selectedPriority, setSelectedPriority] = useState('All');
+
+    // Global Events
+    useEffect(() => {
+        const handleOpenNewTask = () => setIsModalOpen(true);
+        const handleCloseModals = () => {
+            setIsModalOpen(false);
+            setIsEditModalOpen(false);
+        };
+        window.addEventListener('openNewTaskModal', handleOpenNewTask);
+        window.addEventListener('closeAllModals', handleCloseModals);
+        return () => {
+            window.removeEventListener('openNewTaskModal', handleOpenNewTask);
+            window.removeEventListener('closeAllModals', handleCloseModals);
+        };
+    }, []);
+
     // --- Drag & Drop State ---
     const [draggedTaskId, setDraggedTaskId] = useState(null);
     const [isDragging, setIsDragging] = useState(false);

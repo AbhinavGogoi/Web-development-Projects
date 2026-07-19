@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
@@ -33,6 +33,32 @@ const HelpCenterPage = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [contactForm, setContactForm] = useState({ subject: '', message: '' });
     const [notification, setNotification] = useState({ show: false, message: '', type: '' });
+    const [tickets, setTickets] = useState([]);
+    const [activeModal, setActiveModal] = useState(null);
+
+    useEffect(() => {
+        const fetchTickets = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                const res = await fetch(`${API_BASE}/support/tickets`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    setTickets(data);
+                }
+            } catch (err) {
+                console.error("Failed to fetch tickets", err);
+            }
+        };
+        fetchTickets();
+    }, []);
+
+    useEffect(() => {
+        const handleCloseModals = () => setActiveModal(null);
+        window.addEventListener('closeAllModals', handleCloseModals);
+        return () => window.removeEventListener('closeAllModals', handleCloseModals);
+    }, []);
 
     const handleLogout = () => {
         localStorage.removeItem('token');
@@ -64,6 +90,9 @@ const HelpCenterPage = () => {
             if (response.ok) {
                 showNotification('Message sent! Our support team will get back to you soon.');
                 setContactForm({ subject: '', message: '' });
+                if (data.ticket) {
+                    setTickets(prev => [data.ticket, ...prev]);
+                }
             } else {
                 showNotification(data.message || 'Failed to send message.', 'error');
             }
@@ -171,6 +200,33 @@ const HelpCenterPage = () => {
                                             </div>
                                         )}
                                     </div>
+
+                                    {/* My Tickets Section */}
+                                    <div className="mt-12 pt-8 border-t border-slate-200">
+                                        <h3 className="text-xl font-extrabold text-slate-900 flex items-center gap-2 mb-6">
+                                            <span className="text-2xl">🎫</span> My Support Tickets
+                                        </h3>
+                                        <div className="space-y-3">
+                                            {tickets.length > 0 ? tickets.map((ticket, idx) => (
+                                                <div key={idx} className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm flex items-start justify-between gap-4">
+                                                    <div>
+                                                        <h4 className="font-bold text-slate-900">{ticket.subject}</h4>
+                                                        <p className="text-sm text-slate-500 mt-1 line-clamp-2">{ticket.message}</p>
+                                                        <span className="text-xs font-bold text-slate-400 mt-3 inline-block">
+                                                            {new Date(ticket.createdAt).toLocaleDateString()}
+                                                        </span>
+                                                    </div>
+                                                    <span className={`px-3 py-1 rounded-lg text-xs font-bold whitespace-nowrap ${ticket.status === 'Open' ? 'bg-amber-100 text-amber-700' : ticket.status === 'In Progress' ? 'bg-blue-100 text-blue-700' : 'bg-emerald-100 text-emerald-700'}`}>
+                                                        {ticket.status}
+                                                    </span>
+                                                </div>
+                                            )) : (
+                                                <div className="p-8 text-center text-slate-500 bg-slate-50 rounded-2xl border border-slate-100">
+                                                    You haven't submitted any support tickets yet.
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
                                 </div>
 
                                 {/* Sidebar (Contact Form) */}
@@ -216,9 +272,9 @@ const HelpCenterPage = () => {
                                     <div className="bg-sky-50 rounded-3xl p-6 border border-sky-100">
                                         <h3 className="font-bold text-sky-900 mb-3">Resources</h3>
                                         <ul className="space-y-2">
-                                            <li><a href="#" className="flex items-center gap-2 text-sm text-sky-700 hover:text-sky-900 font-medium"><span className="text-sky-500">→</span> Getting Started Guide</a></li>
-                                            <li><a href="#" className="flex items-center gap-2 text-sm text-sky-700 hover:text-sky-900 font-medium"><span className="text-sky-500">→</span> Keyboard Shortcuts</a></li>
-                                            <li><a href="#" className="flex items-center gap-2 text-sm text-sky-700 hover:text-sky-900 font-medium"><span className="text-sky-500">→</span> Community Forum</a></li>
+                                            <li><button onClick={() => setActiveModal('gettingStarted')} className="flex items-center gap-2 text-sm text-sky-700 hover:text-sky-900 font-medium"><span className="text-sky-500">→</span> Getting Started Guide</button></li>
+                                            <li><button onClick={() => setActiveModal('shortcuts')} className="flex items-center gap-2 text-sm text-sky-700 hover:text-sky-900 font-medium"><span className="text-sky-500">→</span> Keyboard Shortcuts</button></li>
+                                            <li><button onClick={() => setActiveModal('forum')} className="flex items-center gap-2 text-sm text-sky-700 hover:text-sky-900 font-medium"><span className="text-sky-500">→</span> Community Forum</button></li>
                                         </ul>
                                     </div>
                                 </div>
@@ -228,6 +284,94 @@ const HelpCenterPage = () => {
                     </div>
                 </main>
             </div>
+
+            {/* Resource Modals */}
+            <AnimatePresence>
+                {activeModal && (
+                    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+                        <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="bg-white rounded-3xl p-8 max-w-lg w-full shadow-2xl relative overflow-hidden">
+                            <button onClick={() => setActiveModal(null)} className="absolute top-6 right-6 text-slate-400 hover:text-slate-600 bg-slate-100 hover:bg-slate-200 p-2 rounded-full transition-colors">
+                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                            </button>
+                            
+                            {activeModal === 'gettingStarted' && (
+                                <div>
+                                    <div className="w-12 h-12 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center mb-6">
+                                        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                                    </div>
+                                    <h3 className="text-2xl font-extrabold text-slate-900 mb-2">Getting Started</h3>
+                                    <p className="text-slate-500 mb-6 font-medium">Master Taskify in 3 simple steps.</p>
+                                    <div className="space-y-4">
+                                        <div className="flex gap-4">
+                                            <div className="w-8 h-8 shrink-0 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold">1</div>
+                                            <div>
+                                                <h4 className="font-bold text-slate-900">Create your first task</h4>
+                                                <p className="text-sm text-slate-500 mt-1">Head over to the Tasks tab and hit the 'Add Task' button. Set a priority and a due date.</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex gap-4">
+                                            <div className="w-8 h-8 shrink-0 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold">2</div>
+                                            <div>
+                                                <h4 className="font-bold text-slate-900">Set a Weekly Goal</h4>
+                                                <p className="text-sm text-slate-500 mt-1">Navigate to the Goals tab to create overarching objectives that tie your tasks together.</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex gap-4">
+                                            <div className="w-8 h-8 shrink-0 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold">3</div>
+                                            <div>
+                                                <h4 className="font-bold text-slate-900">Customize your workspace</h4>
+                                                <p className="text-sm text-slate-500 mt-1">Visit Settings to change your theme, upload a profile photo, and enable 2FA.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {activeModal === 'shortcuts' && (
+                                <div>
+                                    <div className="w-12 h-12 rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center mb-6">
+                                        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
+                                    </div>
+                                    <h3 className="text-2xl font-extrabold text-slate-900 mb-2">Keyboard Shortcuts</h3>
+                                    <p className="text-slate-500 mb-6 font-medium">Navigate faster without touching your mouse.</p>
+                                    <div className="space-y-2">
+                                        <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100">
+                                            <span className="font-medium text-slate-700">Global Search</span>
+                                            <div className="flex gap-1"><kbd className="px-2 py-1 bg-white border border-slate-200 rounded text-xs font-bold font-mono">Ctrl</kbd><kbd className="px-2 py-1 bg-white border border-slate-200 rounded text-xs font-bold font-mono">K</kbd></div>
+                                        </div>
+                                        <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100">
+                                            <span className="font-medium text-slate-700">New Task</span>
+                                            <div className="flex gap-1"><kbd className="px-2 py-1 bg-white border border-slate-200 rounded text-xs font-bold font-mono">Alt</kbd><kbd className="px-2 py-1 bg-white border border-slate-200 rounded text-xs font-bold font-mono">N</kbd></div>
+                                        </div>
+                                        <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100">
+                                            <span className="font-medium text-slate-700">Toggle Theme</span>
+                                            <div className="flex gap-1"><kbd className="px-2 py-1 bg-white border border-slate-200 rounded text-xs font-bold font-mono">Ctrl</kbd><kbd className="px-2 py-1 bg-white border border-slate-200 rounded text-xs font-bold font-mono">D</kbd></div>
+                                        </div>
+                                        <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100">
+                                            <span className="font-medium text-slate-700">Close Modals</span>
+                                            <div className="flex gap-1"><kbd className="px-2 py-1 bg-white border border-slate-200 rounded text-xs font-bold font-mono">Esc</kbd></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {activeModal === 'forum' && (
+                                <div className="text-center">
+                                    <div className="w-20 h-20 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-6">
+                                        <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" /></svg>
+                                    </div>
+                                    <h3 className="text-2xl font-extrabold text-slate-900 mb-2">Community Forum</h3>
+                                    <p className="text-slate-500 mb-8 font-medium">We're launching our community forum in Q3! Connect with other users, share templates, and request features.</p>
+                                    <button onClick={() => { setActiveModal(null); showNotification('Added to waitlist!'); }} className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-lg transition-all">
+                                        Join the Waitlist
+                                    </button>
+                                </div>
+                            )}
+
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };

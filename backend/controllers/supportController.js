@@ -1,4 +1,5 @@
 const nodemailer = require('nodemailer');
+const SupportTicket = require('../models/SupportTicket');
 
 exports.sendSupportMessage = async (req, res) => {
     try {
@@ -11,7 +12,20 @@ exports.sendSupportMessage = async (req, res) => {
             return res.status(400).json({ message: 'Subject and message are required' });
         }
 
+        // Save ticket to database
+        const ticket = await SupportTicket.create({
+            userId: user._id,
+            subject,
+            message,
+            status: 'Open'
+        });
+
         // Configure the email transporter using env variables
+        if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+            console.log(`[MOCK EMAIL] Support Ticket Created: ${subject} by ${user.email}`);
+            return res.status(200).json({ message: 'Support ticket created successfully', ticket });
+        }
+
         const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
@@ -38,10 +52,20 @@ exports.sendSupportMessage = async (req, res) => {
 
         await transporter.sendMail(mailOptions);
 
-        res.status(200).json({ message: 'Support message sent successfully' });
+        res.status(200).json({ message: 'Support ticket created and email sent successfully', ticket });
 
     } catch (error) {
-        console.error('Error sending support email:', error);
-        res.status(500).json({ message: 'Failed to send message. Please ensure EMAIL_USER and EMAIL_PASS are configured in the .env file.' });
+        console.error('Error in support controller:', error);
+        res.status(500).json({ message: 'Failed to process support request.' });
+    }
+};
+
+exports.getUserTickets = async (req, res) => {
+    try {
+        const tickets = await SupportTicket.find({ userId: req.user._id }).sort({ createdAt: -1 });
+        res.status(200).json(tickets);
+    } catch (error) {
+        console.error('Error fetching tickets:', error);
+        res.status(500).json({ message: 'Failed to fetch tickets.' });
     }
 };

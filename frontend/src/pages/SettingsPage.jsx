@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
+import PasswordStrengthIndicator from '../components/PasswordStrengthIndicator';
 
 import { API_BASE, SERVER_URL } from '../config';
 
@@ -570,6 +571,7 @@ const SettingsPage = () => {
                     <div>
                         <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">New Password</label>
                         <input type="password" value={security.newPassword} onChange={e => setSecurity({...security, newPassword: e.target.value})} placeholder="••••••••" className="w-full px-4 py-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-medium" />
+                        <PasswordStrengthIndicator password={security.newPassword} />
                     </div>
                     <div>
                         <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Confirm New Password</label>
@@ -705,12 +707,14 @@ const SettingsPage = () => {
                                             {activeTab === 'security' && renderSecurity()}
                                         </AnimatePresence>
 
-                                        {/* Save Button floating at bottom of form */}
-                                        <div className="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800 flex justify-end">
-                                            <button type="submit" disabled={isLoading} className="px-8 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50">
-                                                {isLoading ? 'Saving...' : 'Save Changes'}
-                                            </button>
-                                        </div>
+                                        {/* Save Button */}
+                                        {activeTab !== 'security' && (
+                                            <div className="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800 flex justify-end">
+                                                <button type="submit" disabled={isLoading} className="px-8 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50">
+                                                    {isLoading ? 'Saving...' : 'Save Changes'}
+                                                </button>
+                                            </div>
+                                        )}
                                     </form>
                                 </div>
                             </div>

@@ -17,15 +17,53 @@ import SettingsPage from './pages/SettingsPage';
 import HelpCenterPage from './pages/HelpCenterPage';
 import AIChatPage from './pages/AIChatPage';
 import DailyTasksPage from './pages/DailyTasksPage';
+import CommandPalette from './components/CommandPalette';
 
 // --- NEW COMPONENT: Animated Routes ---
 // We create this inner component so we can use the 'useLocation' hook, 
 // which must be rendered INSIDE the <Router> tags.
 const AnimatedRoutes = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
+    const location = useLocation();
+    const navigate = useNavigate();
 
-  // Define our premium fade-in/fade-out transition
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            // Check if user is typing in an input, textarea, or select
+            if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) {
+                if (e.key === 'Escape') {
+                    e.target.blur();
+                    window.dispatchEvent(new Event('closeAllModals'));
+                }
+                return;
+            }
+
+            if (e.ctrlKey || e.metaKey) {
+                if (e.key.toLowerCase() === 'k') {
+                    e.preventDefault();
+                    window.dispatchEvent(new Event('openGlobalSearch'));
+                } else if (e.key.toLowerCase() === 'd') {
+                    e.preventDefault();
+                    const theme = localStorage.getItem('theme') || 'system';
+                    const root = window.document.documentElement;
+                    const isDark = root.classList.contains('dark');
+                    const newTheme = isDark ? 'light' : 'dark';
+                    localStorage.setItem('theme', newTheme);
+                    window.dispatchEvent(new Event('themeChanged'));
+                }
+            } else if (e.altKey && e.key.toLowerCase() === 'n') {
+                e.preventDefault();
+                navigate('/tasks');
+                setTimeout(() => window.dispatchEvent(new Event('openNewTaskModal')), 100);
+            } else if (e.key === 'Escape') {
+                window.dispatchEvent(new Event('closeAllModals'));
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [navigate]);
+
+    // Define our premium fade-in/fade-out transition
   const pageVariants = {
     initial: { opacity: 0, y: 15 },
     animate: {
@@ -42,6 +80,8 @@ const AnimatedRoutes = () => {
 
   return (
     // mode="wait" ensures the current page fully fades out BEFORE the new page fades in
+    <>
+    <CommandPalette />
     <AnimatePresence mode="wait">
       {/* We pass the location and key to Routes so Framer Motion knows when the page changes */}
       <Routes location={location} key={location.pathname}>
@@ -187,6 +227,7 @@ const AnimatedRoutes = () => {
         } />
       </Routes>
     </AnimatePresence>
+    </>
   );
 };
 
