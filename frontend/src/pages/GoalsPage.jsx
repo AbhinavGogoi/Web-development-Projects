@@ -149,6 +149,11 @@ const GoalsPage = () => {
         }
     };
 
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        navigate('/');
+    };
+
     const handleDeleteGoal = async (id) => {
         try {
             const token = localStorage.getItem('token');
@@ -270,7 +275,12 @@ const GoalsPage = () => {
             </AnimatePresence>
 
             <div className="w-full h-full bg-gradient-to-br from-blue-100 to-sky-50 dark:from-slate-950 dark:to-slate-900 flex overflow-hidden shadow-2xl transition-colors duration-500">
-                <Sidebar activePage="goals" goalCount={goals.length} />
+                <Sidebar 
+                    activePage="goals" 
+                    goalCount={goals.length}
+                    taskCount={tasks.length}
+                    onLogout={handleLogout}
+                />
 
                 <main className="flex-1 flex flex-col h-full overflow-y-auto overflow-x-hidden min-w-0 p-4 pb-24 md:p-8 md:pb-8">
 
