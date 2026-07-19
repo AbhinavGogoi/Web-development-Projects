@@ -31,6 +31,7 @@ app.use('/api/goals', require('./routes/goalRoutes'));
 app.use('/api/ai', require('./routes/aiRoutes'));
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/support', require('./routes/supportRoutes'));
+app.use('/api/dailytasks', require('./routes/dailyTaskRoutes'));
 
 // Serve Frontend in Production
 if (process.env.NODE_ENV === 'production') {

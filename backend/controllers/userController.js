@@ -54,15 +54,16 @@ const updateSettings = async (req, res) => {
         const user = await User.findById(req.user._id);
         if (!user) return res.status(404).json({ message: 'User not found' });
 
-        user.name = name || user.name;
-        user.email = email || user.email;
-        user.profession = profession || user.profession;
-        
-        if (preferences) user.preferences = { ...user.preferences, ...preferences };
-        if (notifications) user.notifications = { ...user.notifications, ...notifications };
+        const updateFields = {};
+        if (name) updateFields.name = name;
+        if (email) updateFields.email = email;
+        if (profession) updateFields.profession = profession;
+        if (preferences) updateFields.preferences = { ...user.preferences, ...preferences };
+        if (notifications) updateFields.notifications = { ...user.notifications, ...notifications };
 
-        await user.save();
-        res.status(200).json(user);
+        await User.updateOne({ _id: req.user._id }, { $set: updateFields });
+        const updatedUser = await User.findById(req.user._id).select('-password');
+        res.status(200).json(updatedUser);
     } catch (error) {
         res.status(500).json({ message: 'Failed to update settings', error: error.message });
     }
@@ -104,8 +105,8 @@ const changePassword = async (req, res) => {
         if (!isMatch) return res.status(400).json({ message: 'Incorrect current password' });
 
         const salt = await bcrypt.genSalt(10);
-        user.password = await bcrypt.hash(newPassword, salt);
-        await user.save();
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
+        await User.updateOne({ _id: req.user._id }, { $set: { password: hashedPassword } });
 
         res.status(200).json({ message: 'Password updated successfully' });
     } catch (error) {
@@ -142,9 +143,7 @@ const generate2FA = async (req, res) => {
             name: `Taskify (${req.user.email})`
         });
 
-        const user = await User.findById(req.user._id);
-        user.twoFactorSecret = secret.base32;
-        await user.save();
+        await User.updateOne({ _id: req.user._id }, { $set: { twoFactorSecret: secret.base32 } });
 
         qrcode.toDataURL(secret.otpauth_url, (err, data_url) => {
             if (err) return res.status(500).json({ message: 'Error generating QR code' });
@@ -174,8 +173,7 @@ const verify2FA = async (req, res) => {
         });
 
         if (verified) {
-            user.isTwoFactorEnabled = true;
-            await user.save();
+            await User.updateOne({ _id: req.user._id }, { $set: { isTwoFactorEnabled: true } });
             res.status(200).json({ message: '2FA enabled successfully' });
         } else {
             res.status(400).json({ message: 'Invalid token' });
@@ -190,10 +188,7 @@ const verify2FA = async (req, res) => {
 // @access  Private
 const disable2FA = async (req, res) => {
     try {
-        const user = await User.findById(req.user._id);
-        user.isTwoFactorEnabled = false;
-        user.twoFactorSecret = null;
-        await user.save();
+        await User.updateOne({ _id: req.user._id }, { $set: { isTwoFactorEnabled: false, twoFactorSecret: null } });
         res.status(200).json({ message: '2FA disabled successfully' });
     } catch (error) {
         res.status(500).json({ message: 'Failed to disable 2FA', error: error.message });

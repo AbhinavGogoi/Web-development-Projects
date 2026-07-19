@@ -16,6 +16,7 @@ import CalendarPage from './pages/CalendarPage';
 import SettingsPage from './pages/SettingsPage';
 import HelpCenterPage from './pages/HelpCenterPage';
 import AIChatPage from './pages/AIChatPage';
+import DailyTasksPage from './pages/DailyTasksPage';
 
 // --- NEW COMPONENT: Animated Routes ---
 // We create this inner component so we can use the 'useLocation' hook, 
@@ -105,6 +106,19 @@ const AnimatedRoutes = () => {
             className="relative z-10"
           >
             <TasksPage />
+          </motion.div>
+        } />
+
+        {/* ROUTE 4.5: The Daily Tasks Page */}
+        <Route path="/daily-tasks" element={
+          <motion.div
+            variants={pageVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            className="relative z-10"
+          >
+            <DailyTasksPage />
           </motion.div>
         } />
 

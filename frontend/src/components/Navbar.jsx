@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const Navbar = () => {
     return (
@@ -34,19 +35,19 @@ const Navbar = () => {
 
                 {/* Right Zone: CTA Button */}
                 {localStorage.getItem('token') ? (
-                    <a href="/dashboard" className="bg-white text-black px-5 py-2 rounded-xl flex items-center gap-2 hover:bg-gray-100 transition-colors shadow-sm z-10">
+                    <Link to="/dashboard" className="bg-white text-black px-5 py-2 rounded-xl flex items-center gap-2 hover:bg-gray-100 transition-colors shadow-sm z-10">
                         <span className="text-sm font-bold">Dashboard</span>
                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
                         </svg>
-                    </a>
+                    </Link>
                 ) : (
-                    <a href="/login" className="bg-white text-black px-5 py-2 rounded-xl flex items-center gap-2 hover:bg-gray-100 transition-colors shadow-sm z-10">
+                    <Link to="/login" className="bg-white text-black px-5 py-2 rounded-xl flex items-center gap-2 hover:bg-gray-100 transition-colors shadow-sm z-10">
                         <span className="text-sm font-bold">Sign In</span>
                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                         </svg>
-                    </a>
+                    </Link>
                 )}
 
             </nav>
