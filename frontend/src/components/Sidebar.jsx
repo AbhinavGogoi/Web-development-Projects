@@ -100,9 +100,7 @@ const Sidebar = ({ activePage = 'dashboard', taskCount = 0, goalCount = 0, onLog
             <div>
                 {/* Brand Logo */}
                 <div className="flex items-center gap-3 mb-10 px-2">
-                    <div className="w-8 h-8 rounded-xl bg-gradient-to-b from-blue-400 to-blue-700 flex items-start justify-center relative shadow-inner">
-                        <div className="absolute top-0 w-full h-1/3 bg-white/30 rounded-t-xl"></div>
-                    </div>
+                    <img src="/logo.png" alt="Taskify Logo" className="w-8 h-8 object-contain" />
                     <span className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">Taskify</span>
                 </div>
 

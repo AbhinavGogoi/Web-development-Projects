@@ -51,9 +51,7 @@ const Footer = () => {
                         <div className="md:col-span-4 flex flex-col items-start">
                             {/* Logo & Brand Name */}
                             <div className="flex items-center gap-3 mb-6">
-                                <div className="w-8 h-8 rounded-xl bg-gradient-to-b from-blue-400 to-blue-700 flex items-start justify-center relative overflow-hidden shadow-inner">
-                                    <div className="absolute top-0 w-full h-1/3 bg-white/30 rounded-t-xl"></div>
-                                </div>
+                                <img src="/logo.png" alt="Taskify Logo" className="w-8 h-8 object-contain" />
                                 <span className="text-slate-900 dark:text-white font-bold text-2xl tracking-tight">Taskify</span>
                             </div>
                             <p className="text-slate-600 dark:text-slate-400 text-sm font-medium leading-relaxed mb-8 pr-4">

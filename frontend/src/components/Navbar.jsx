@@ -20,9 +20,7 @@ const Navbar = () => {
 
                 {/* Left Zone: Logo and Brand Name */}
                 <div className="flex items-center gap-3 cursor-pointer z-10">
-                    <div className="w-8 h-8 rounded-xl bg-gradient-to-b from-blue-400 to-blue-700 flex items-start justify-center relative overflow-hidden shadow-inner">
-                        <div className="absolute top-0 w-full h-1/3 bg-white/30 rounded-t-xl"></div>
-                    </div>
+                    <img src="/logo.png" alt="Taskify Logo" className="w-8 h-8 object-contain" />
                     <a href="#heroSection" ><span className="text-white font-bold text-lg tracking-wide">Taskify</span></a>
                 </div>
 

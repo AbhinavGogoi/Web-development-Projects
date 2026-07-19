@@ -251,10 +251,9 @@ const Auth = () => {
                         alt="Abstract fluid design"
                         className="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-60"
                     />
-                    <div className="relative z-10 flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-b from-blue-400 to-blue-700 flex items-start justify-center relative overflow-hidden shadow-inner">
-                            <div className="absolute top-0 w-full h-1/3 bg-white dark:bg-slate-800/30 rounded-t-xl"></div>
-                        </div>
+                    {/* Logo Area */}
+                    <div className="absolute top-8 left-10 flex items-center gap-3">
+                        <img src="/logo.png" alt="Taskify Logo" className="w-8 h-8 object-contain" />
                         <span className="text-white font-bold text-2xl tracking-wide">Taskify</span>
                     </div>
                     <div className="relative z-10 mt-auto">
