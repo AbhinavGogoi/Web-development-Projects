@@ -141,10 +141,8 @@ const Auth = () => {
             const data = await response.json();
 
             if (response.ok) {
-                localStorage.setItem('token', data.token);
-                localStorage.setItem('userName', data.user?.name || 'User');
-                localStorage.setItem('profilePhoto', data.user?.profilePhoto || '');
-                navigate('/dashboard');
+                setIsLogin(true);
+                setSuccessMessage('Account created successfully! Please sign in.');
             } else {
                 setError(data.message || 'Registration failed.');
             }
