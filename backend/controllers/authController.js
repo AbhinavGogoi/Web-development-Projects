@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const speakeasy = require('speakeasy');
 const crypto = require('crypto');
-const { sendEmailOTP, sendNewLoginAlert } = require('../services/emailService');
+const { sendEmailOTP } = require('../services/emailService');
 const { sendSMSOTP } = require('../services/smsService');
 
 // Helper function to check and register new devices
@@ -16,9 +16,6 @@ const handleDeviceCheck = async (req, user) => {
     const isKnown = user.knownDevices?.some(device => device.ip === ip && device.userAgent === userAgent);
     
     if (!isKnown) {
-        // Send email alert
-        await sendNewLoginAlert(user.email, ip, userAgent);
-        
         // Add to known devices
         await User.updateOne(
             { _id: user._id }, 
