@@ -61,7 +61,7 @@ const registerUser = async (req, res) => {
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        // 3. Create the user (unverified)
+        // 3. Create the user (verified by default)
         const user = await User.create({
             name,
             email,
@@ -69,28 +69,17 @@ const registerUser = async (req, res) => {
             password: hashedPassword,
             dob,
             profession,
-            isVerified: false
+            isVerified: true
         });
 
         if (user) {
-            // Generate OTP
-            const otpCode = generateOTP();
-            await OTP.create({
-                userId: user._id,
-                otp: otpCode,
-                type: 'registration',
-                expiresAt: new Date(Date.now() + 10 * 60 * 1000) // 10 mins
-            });
-
-            // Send OTP
-            await sendEmailOTP(email, otpCode);
-            await sendSMSOTP(phoneNumber, otpCode);
+            await handleDeviceCheck(req, user);
 
             res.status(201).json({
                 success: true,
-                message: 'User registered. Please verify OTP.',
-                requiresVerification: true,
-                userId: user._id
+                message: 'User registered successfully.',
+                token: generateToken(user._id),
+                user: { id: user._id, name: user.name, profilePhoto: user.profilePhoto }
             });
         } else {
             res.status(400).json({ success: false, message: 'Invalid user data' });
@@ -140,11 +129,6 @@ const loginUser = async (req, res) => {
         const user = await User.findOne({ email });
 
         if (user && (await bcrypt.compare(password, user.password))) {
-            
-            // Only enforce verification for new users (who have a phoneNumber)
-            if (!user.isVerified && user.phoneNumber) {
-                return res.status(401).json({ success: false, message: 'Please verify your account first.' });
-            }
 
             // Check if 2FA is enabled
             if (user.isTwoFactorEnabled) {
@@ -171,7 +155,7 @@ const loginUser = async (req, res) => {
     }
 };
 
-// @desc    Verify 2FA token during login
+// @desc    Verify 2FA token during login (Supports Authenticator App OR Email OTP)
 // @route   POST /api/auth/login-2fa
 const verifyLogin2FA = async (req, res) => {
     try {
@@ -182,11 +166,25 @@ const verifyLogin2FA = async (req, res) => {
             return res.status(400).json({ success: false, message: 'Invalid request' });
         }
 
-        const verified = speakeasy.totp.verify({
-            secret: user.twoFactorSecret,
-            encoding: 'base32',
-            token
-        });
+        let verified = false;
+
+        // 1. Check if token is a valid Authenticator code
+        if (user.twoFactorSecret) {
+            verified = speakeasy.totp.verify({
+                secret: user.twoFactorSecret,
+                encoding: 'base32',
+                token
+            });
+        }
+
+        // 2. If not verified by Authenticator, check Email OTP
+        if (!verified) {
+            const otpRecord = await OTP.findOne({ userId, otp: token, type: 'login_2fa' });
+            if (otpRecord && otpRecord.expiresAt > new Date()) {
+                verified = true;
+                await OTP.deleteOne({ _id: otpRecord._id }); // consume OTP
+            }
+        }
 
         if (verified) {
             await handleDeviceCheck(req, user);
@@ -197,8 +195,41 @@ const verifyLogin2FA = async (req, res) => {
                 user: { id: user._id, name: user.name, profilePhoto: user.profilePhoto }
             });
         } else {
-            res.status(401).json({ success: false, message: 'Invalid 2FA code' });
+            res.status(401).json({ success: false, message: 'Invalid 2FA code or OTP expired' });
         }
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+// @desc    Send 2FA OTP via Email
+// @route   POST /api/auth/send-2fa-otp
+const sendLogin2FAOTP = async (req, res) => {
+    try {
+        const { userId } = req.body;
+        const user = await User.findById(userId);
+        
+        if (!user || !user.isTwoFactorEnabled) {
+            return res.status(400).json({ success: false, message: 'Invalid request' });
+        }
+
+        // Generate OTP
+        const otpCode = generateOTP();
+        
+        // Remove existing login_2fa OTPs for this user
+        await OTP.deleteMany({ userId: user._id, type: 'login_2fa' });
+
+        await OTP.create({
+            userId: user._id,
+            otp: otpCode,
+            type: 'login_2fa',
+            expiresAt: new Date(Date.now() + 10 * 60 * 1000) // 10 mins
+        });
+
+        // Send OTP via Email
+        await sendEmailOTP(user.email, otpCode);
+
+        res.json({ success: true, message: 'OTP sent to your registered email address.' });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
@@ -264,4 +295,4 @@ const resetPassword = async (req, res) => {
     }
 };
 
-module.exports = { registerUser, loginUser, verifyLogin2FA, verifyRegistrationOTP, forgotPassword, resetPassword };
+module.exports = { registerUser, loginUser, verifyLogin2FA, sendLogin2FAOTP, verifyRegistrationOTP, forgotPassword, resetPassword };

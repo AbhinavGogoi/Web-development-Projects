@@ -1,5 +1,5 @@
 {
-  "appId": "com.supaste.app",
-  "appName": "Supaste",
+  "appId": "com.taskify.app",
+  "appName": "Taskify",
   "webDir": "dist"
 }

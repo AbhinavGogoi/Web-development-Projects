@@ -105,6 +105,25 @@ const Auth = () => {
         }
     };
 
+    const handleSend2FAOTP = async () => {
+        setError('');
+        try {
+            const response = await fetch(`${API_BASE}/auth/send-2fa-otp`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: currentUserId })
+            });
+            const data = await response.json();
+            if (response.ok) {
+                setSuccessMessage(data.message || 'OTP sent to your email.');
+            } else {
+                setError(data.message || 'Could not send OTP.');
+            }
+        } catch (err) {
+            setError('Server error while sending OTP.');
+        }
+    };
+
     const handleRegisterSubmit = async (e) => {
         e.preventDefault();
         setError('');
@@ -122,11 +141,10 @@ const Auth = () => {
             const data = await response.json();
 
             if (response.ok) {
-                if (data.requiresVerification) {
-                    setIsRegistrationVerifyStep(true);
-                    setCurrentUserId(data.userId);
-                    setSuccessMessage(data.message);
-                }
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('userName', data.user?.name || 'User');
+                localStorage.setItem('profilePhoto', data.user?.profilePhoto || '');
+                navigate('/dashboard');
             } else {
                 setError(data.message || 'Registration failed.');
             }
@@ -217,11 +235,10 @@ const Auth = () => {
     };
 
     // Helper to determine what is currently active
-    const showBackToLogin = is2FAStep || isRegistrationVerifyStep || isForgotPasswordStep || isResetPasswordStep;
+    const showBackToLogin = is2FAStep || isForgotPasswordStep || isResetPasswordStep;
 
     const resetToLogin = () => {
         setIs2FAStep(false);
-        setIsRegistrationVerifyStep(false);
         setIsForgotPasswordStep(false);
         setIsResetPasswordStep(false);
         setIsLogin(true);
@@ -273,13 +290,12 @@ const Auth = () => {
                         <h2 className="text-3xl font-extrabold text-slate-800 dark:text-slate-200 tracking-tight">
                             {isForgotPasswordStep || isResetPasswordStep ? 'Reset Password' : 
                              is2FAStep ? 'Two-Factor Authentication' : 
-                             isRegistrationVerifyStep ? 'Verify Account' :
                              isLogin ? 'Welcome back' : 'Create an account'}
                         </h2>
                         <p className="text-slate-500 dark:text-slate-400 text-sm mt-2 font-medium">
                             {isForgotPasswordStep ? 'Enter your email to receive an OTP.' : 
                              isResetPasswordStep ? 'Enter the OTP and your new password.' :
-                             is2FAStep || isRegistrationVerifyStep ? 'Check your email/phone for the OTP.' :
+                             is2FAStep ? 'Check your email/phone for the OTP.' :
                              isLogin ? 'Enter your details to access your dashboard.' : 'Start mastering your workflow today.'}
                         </p>
                     </motion.div>
@@ -334,20 +350,14 @@ const Auth = () => {
                             ) : is2FAStep ? (
                                 <motion.form key="2fa" layout variants={formVariants} initial="hidden" animate="visible" exit="exit" className="flex flex-col gap-4" onSubmit={handleVerify2FASubmit}>
                                     <div>
-                                        <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Enter Authenticator Code</label>
+                                        <div className="flex justify-between items-center mb-1.5">
+                                            <label className="block text-sm font-bold text-slate-700 dark:text-slate-300">Enter Authenticator Code</label>
+                                            <button type="button" onClick={handleSend2FAOTP} className="text-xs font-bold text-blue-600 hover:text-blue-700 transition-colors">Send OTP to Email Instead</button>
+                                        </div>
                                         <input type="text" value={twoFactorToken} onChange={e => {setTwoFactorToken(e.target.value); setError('');}} required placeholder="123456" className="w-full px-4 py-3 rounded-xl bg-white dark:bg-slate-800 dark:text-white border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-center tracking-[0.5em] text-2xl transition-all shadow-sm" maxLength="6" />
+                                        <p className="text-xs text-slate-500 mt-2">Enter the 6-digit code from your authenticator app, or request an OTP to your email.</p>
                                     </div>
                                     <button type="submit" className="w-full py-3.5 bg-amber-500 text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 mt-2">
-                                        Verify & Login
-                                    </button>
-                                </motion.form>
-                            ) : isRegistrationVerifyStep ? (
-                                <motion.form key="verifyRegistration" layout variants={formVariants} initial="hidden" animate="visible" exit="exit" className="flex flex-col gap-4" onSubmit={handleVerifyRegistrationSubmit}>
-                                    <div>
-                                        <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Enter Verification OTP</label>
-                                        <input type="text" value={registrationOTP} onChange={e => {setRegistrationOTP(e.target.value); setError('');}} required placeholder="123456" className="w-full px-4 py-3 rounded-xl bg-white dark:bg-slate-800 dark:text-white border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-center tracking-[0.5em] text-2xl transition-all shadow-sm" maxLength="6" />
-                                    </div>
-                                    <button type="submit" className="w-full py-3.5 bg-blue-600 text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 mt-2">
                                         Verify & Login
                                     </button>
                                 </motion.form>

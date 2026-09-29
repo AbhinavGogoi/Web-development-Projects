@@ -1,10 +1,10 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace "com.supaste.app"
+    namespace "com.taskify.app"
     compileSdk rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "com.supaste.app"
+        applicationId "com.taskify.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
@@ -16,10 +16,26 @@ android {
             ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    signingConfigs {
+        release {
+            storeFile file("taskify-release-key.jks")
+            storePassword "taskify123"
+            keyAlias "taskify"
+            keyPassword "taskify123"
+        }
+    }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+    }
+    
+    // Rename the output APK to Taskify.apk
+    applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "Taskify.apk"
         }
     }
 }
@@ -40,7 +56,9 @@ dependencies {
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
     implementation project(':capacitor-cordova-android-plugins')
-
+    
+    // Fix for duplicate Kotlin classes
+    implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.8.22"))
     constraints {
         implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.22") {
             because("kotlin-stdlib-jdk7 is now a part of kotlin-stdlib")

@@ -1,4 +1,4 @@
-package com.supaste.app;
+package com.taskify.app;
 
 import com.getcapacitor.BridgeActivity;
 
